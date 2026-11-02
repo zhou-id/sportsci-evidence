@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>关于本站 · SPORTSCI RESEARCH INSTITUTE</title>
+<meta name="description" content="SPORTSCI RESEARCH INSTITUTE 关于页面：项目定位、技术架构、数据来源与引用规范、完整免责声明、CC BY-NC 4.0 授权范围、隐私说明、更新日志与反馈方式。">
+<link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="%238fe8cd"/><stop offset="1" stop-color="%233f8a70"/></linearGradient></defs><polygon points="16,2.5 27.5,9 27.5,23 16,29.5 4.5,23 4.5,9" fill="rgba(255,79,227,0.07)" stroke="url(%23g)" stroke-width="1.6"/><polygon points="16,7 23.5,11.2 23.5,20.8 16,25 8.5,20.8 8.5,11.2" fill="none" stroke="url(%23g)" stroke-width="0.8" opacity="0.5"/><path d="M8,11 L14,21 M14,11 L8,21 M15,11 L23,11 L15,21 L23,21" fill="none" stroke="%23c9ae85" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><circle cx="25" cy="16" r="1.6" fill="%238fe8cd"/></svg>'>
+<link rel="stylesheet" href="assets/css/main.css">
+<style>
+  .ab-hero { padding-top: calc(var(--nav-h) + 56px); padding-bottom: 20px; }
+  .ab-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; }
+  .ab-grid .card { padding: 18px 16px; }
+  .ab-grid .abn { font-size: 10px; letter-spacing: 0.18em; color: var(--accent-dim); }
+  .ab-grid .abt { font-size: 14px; color: #f5e4ff; font-weight: 600; margin-top: 6px; }
+  .ab-grid .abd { font-size: 11.5px; color: var(--ink-dim); margin-top: 5px; line-height: 1.55; }
+  .ab-num { display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px; }
+  .ab-tl { position: relative; padding-left: 24px; }
+  .ab-tl::before { content: ""; position: absolute; left: 5px; top: 6px; bottom: 6px; width: 1px; background: linear-gradient(180deg, var(--accent), rgba(61,232,255,0.3)); }
+  .ab-tl-item { position: relative; padding-bottom: 22px; }
+  .ab-tl-item::before { content: ""; position: absolute; left: -23px; top: 7px; width: 7px; height: 7px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 10px rgba(255,79,227,0.7); }
+  .ab-tl-v { font-size: 11px; letter-spacing: 0.16em; color: var(--accent-dim); font-weight: 600; }
+  .ab-tl-t { font-size: 14px; color: #f5e4ff; margin-top: 2px; font-weight: 600; }
+  .ab-tl-d { font-size: 12.5px; color: var(--ink-dim); margin-top: 4px; line-height: 1.7; }
+  .ab-allow { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .ab-allow ul { list-style: none; }
+  .ab-allow li { font-size: 12.5px; color: var(--ink-dim); padding: 5px 0 5px 18px; position: relative; }
+  .ab-allow li::before { position: absolute; left: 0; top: 5px; font-size: 12px; }
+  .ab-allow .yes li::before { content: "✓"; color: #3de8ff; }
+  .ab-allow .no li::before { content: "✕"; color: var(--danger); }
+  @media (max-width: 1024px) { .ab-grid { grid-template-columns: repeat(3, 1fr); } }
+  @media (max-width: 720px) {
+    .ab-grid, .ab-num, .ab-allow { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+<canvas id="bg-canvas"></canvas>
+<header class="nav">
+  <a class="nav-brand" href="index.html">
+    <svg class="nav-logo" viewBox="0 0 32 32" aria-hidden="true"><defs><linearGradient id="nlg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff9df2"/><stop offset="1" stop-color="#b026c9"/></linearGradient></defs><polygon points="16,2.5 27.5,9 27.5,23 16,29.5 4.5,23 4.5,9" fill="rgba(255,79,227,0.06)" stroke="url(#nlg)" stroke-width="1.5"/><polygon points="16,7 23.5,11.2 23.5,20.8 16,25 8.5,20.8 8.5,11.2" fill="none" stroke="#b026c9" stroke-width="0.7" opacity="0.55"/><path d="M8,11 L14,21 M14,11 L8,21 M15,11 L23,11 L15,21 L23,21" fill="none" stroke="#ffb54d" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="24.5" cy="23" r="1.3" fill="#ff9df2"/></svg>
+    <span class="nav-title">SPORTSCI RESEARCH <em>INSTITUTE</em></span>
+  </a>
+  <nav class="nav-links">
+    <a href="index.html">首页</a>
+    <a href="database.html">证据数据库</a>
+    <a href="simulation.html">生理仿真</a>
+    <a href="assessment.html">智能评估</a>
+    <a href="tools.html">科研工具</a>
+    <a href="supplements.html">补剂中心</a>
+    <a href="anatomy.html">人体图谱</a>
+    <a href="medicine.html">运动医学</a>
+    <a href="plan.html">训练计划</a>
+    <a href="about.html" class="active">关于</a>
+  </nav>
+</header>
+
+<div class="page">
+<main>
+  <section class="ab-hero"><div class="container">
+    <div class="kicker">MODULE 10 · ABOUT</div>
+    <h1 class="h1">关于本站与其他事项</h1>
+    <p class="lead mt-16">这里集中说明项目定位、技术架构、数据来源与引用规范、完整免责声明、版权授权范围、隐私说明、更新日志与反馈渠道。本站是学术非营利项目，以学习与循证实践为目的。</p>
+
+    <div class="ab-num mt-32">
+      <div class="stat reveal"><div class="stat-num">10</div><div class="stat-label">功能板块</div></div>
+      <div class="stat reveal" data-delay="1"><div class="stat-num">8</div><div class="stat-label">证据分库</div></div>
+      <div class="stat reveal" data-delay="2"><div class="stat-num">169<span class="unit">+</span></div><div class="stat-label">文献条目</div></div>
+      <div class="stat reveal" data-delay="3"><div class="stat-num">0</div><div class="stat-label">后端与跟踪脚本</div></div>
+    </div>
+  </div></section>
+
+  <section class="section" style="padding-top:24px"><div class="container">
+    <div class="kicker reveal">PROJECT</div>
+    <h2 class="h2 reveal">项目定位</h2>
+    <div class="grid-2 mt-24">
+      <div class="card tone-a reveal">
+        <div class="panel-title">为什么做这个平台</div>
+        <p class="panel-sub mt-8">运动人体科学的知识分散在生理学教材、临床指南、训练实践与大量原始文献之间，初学者往往只能获得结论而看不到证据链。本站尝试把「文献证据 — 生理机制 — 评估工具 — 训练决策」串成一条可操作的路径：每个结论都有出处，每个模型都可调参数，每个工具都能复算。</p>
+        <p class="panel-sub mt-8">目标不是替代教科书或临床指南，而是提供一个结构化的索引与演练场，让本科生能练习检索、分级、建模与批判性阅读。</p>
+      </div>
+      <div class="card tone-b reveal" data-delay="1">
+        <div class="panel-title">内容边界</div>
+        <ul class="sub-list">
+          <li>不做泛科普与商业种草，不推荐具体品牌或购买渠道</li>
+          <li>不提供个体化医疗诊断、处方或康复方案</li>
+          <li>不收录未公开数据、不抓取付费数据库全文</li>
+          <li>文献条目为学习性摘编，结论以原始出版物为准</li>
+          <li>模型为经典公式的教学化简化实现，存在适用边界</li>
+          <li>竞技禁用物质仅作规则说明，不提供获取或使用指导</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="kicker reveal mt-48">SITE MAP</div>
+    <h2 class="h2 reveal">十大板块导航</h2>
+    <div class="ab-grid mt-24">
+      <a class="mod-link" href="index.html"><div class="card tone-a reveal"><div class="abn">01</div><div class="abt">首页</div><div class="abd">平台定位、国际指南基准、六大赛道与八大模块入口</div></div></a>
+      <a class="mod-link" href="database.html"><div class="card tone-b reveal"><div class="abn">02</div><div class="abt">证据数据库</div><div class="abd">八大分库、筛选检索、证据分级与分布可视化</div></div></a>
+      <a class="mod-link" href="simulation.html"><div class="card tone-c reveal"><div class="abn">03</div><div class="abt">生理仿真</div><div class="abd">六个可调参数模型：心肺、胸廓、肌肥大、疲劳、药代、能量平衡</div></div></a>
+      <a class="mod-link" href="assessment.html"><div class="card tone-d reveal"><div class="abn">04</div><div class="abt">智能评估</div><div class="abd">拉伤风险、胸痛分诊、ACWR、ACL RTP、PAR-Q+、1RM、EA</div></div></a>
+      <a class="mod-link" href="tools.html"><div class="card tone-a reveal"><div class="abn">05</div><div class="abt">科研工具</div><div class="abd">效应量、Mini Meta、GRADE、PEDro、宏量营养、RPE、周期化</div></div></a>
+      <a class="mod-link" href="supplements.html"><div class="card tone-b reveal"><div class="abn">06</div><div class="abt">补剂中心</div><div class="abd">80 种补剂的剂量、时机与分级，含个体化剂量计算</div></div></a>
+      <a class="mod-link" href="anatomy.html"><div class="card tone-c reveal"><div class="abn">07</div><div class="abt">人体图谱</div><div class="abd">十大部位肌群交互、关节活动度、骨骼与杠杆力学</div></div></a>
+      <a class="mod-link" href="medicine.html"><div class="card tone-d reveal"><div class="abn">08</div><div class="abt">运动医学</div><div class="abd">慢病 FITT-VP 处方、红旗急症、损伤分级、用药与运动</div></div></a>
+      <a class="mod-link" href="plan.html"><div class="card tone-a reveal"><div class="abn">09</div><div class="abt">训练计划</div><div class="abd">逐周周期化生成、六类模板、训练变量与力量标准</div></div></a>
+      <a class="mod-link" href="about.html"><div class="card tone-b reveal"><div class="abn">10</div><div class="abt">关于</div><div class="abd">作者声明、技术架构、引用规范、版权与隐私</div></div></a>
+    </div>
+  </div></section>
+
+  <section class="section" style="padding-top:24px"><div class="container">
+    <div class="kicker reveal">TECHNICAL</div>
+    <h2 class="h2 reveal">技术架构</h2>
+    <div class="grid-3 mt-24">
+      <div class="card tone-a reveal">
+        <div class="panel-title">纯静态 · 零后端</div>
+        <p class="panel-sub mt-8">全部页面为静态 HTML/CSS/JS，无服务器、无数据库、无账号系统。可直接双击本地打开，也可托管于任意静态站点服务。</p>
+      </div>
+      <div class="card tone-b reveal" data-delay="1">
+        <div class="panel-title">本地计算</div>
+        <p class="panel-sub mt-8">剂量计算、风险评估、Meta 分析、计划生成全部在浏览器内完成；输入数据不上传、不存储、不离开本机。</p>
+      </div>
+      <div class="card tone-c reveal" data-delay="2">
+        <div class="panel-title">离线依赖</div>
+        <p class="panel-sub mt-8">Three.js 与 Apache ECharts 以本地 UMD 文件随站点分发，不依赖 CDN 与外网请求，断网仍可完整使用。</p>
+      </div>
+      <div class="card tone-d reveal">
+        <div class="panel-title">可视化引擎</div>
+        <p class="panel-sub mt-8">背景星域与首页三维图形由 Three.js 绘制；证据分布、活动度、负荷曲线等图表由 ECharts 渲染，统一使用自建暗色主题。</p>
+      </div>
+      <div class="card tone-a reveal" data-delay="1">
+        <div class="panel-title">模型实现</div>
+        <p class="panel-sub mt-8">心肺一阶动力学、Banister 疲劳-适应、一房室药代、能量平衡等模型均以显式公式逐步积分实现，参数区间来自公开文献。</p>
+      </div>
+      <div class="card tone-b reveal" data-delay="2">
+        <div class="panel-title">可访问性与适配</div>
+        <p class="panel-sub mt-8">响应式布局覆盖桌面与移动端；遵循减少动态效果偏好；关键交互保留键盘可操作路径。</p>
+      </div>
+    </div>
+  </div></section>
+
+  <section class="section" style="padding-top:24px"><div class="container">
+    <div class="kicker reveal">SOURCES & CITATION</div>
+    <h2 class="h2 reveal">数据来源与引用规范</h2>
+    <div class="grid-2 mt-24">
+      <div class="table-wrap reveal">
+        <table class="table">
+          <thead><tr><th>来源类型</th><th>说明</th></tr></thead>
+          <tbody>
+            <tr><td><span class="t-title">同行评议期刊</span></td><td>运动生理、生物力学、康复、营养与医学期刊的原始研究与综述</td></tr>
+            <tr><td><span class="t-title">立场声明与共识</span></td><td>ACSM、ISSN、IOC、AHA、WHO 等机构的指南、立场声明与共识文件</td></tr>
+            <tr><td><span class="t-title">教科书与工具书</span></td><td>运动生理学、解剖学、运动医学与统计方法学教材</td></tr>
+            <tr><td><span class="t-title">公开数据集</span></td><td>仅用于演示的量级参考，不涉及个人可识别信息</td></tr>
+            <tr><td><span class="t-title">平台自建内容</span></td><td>条目摘编、分级映射、模型参数与界面文案</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="card tone-c reveal" data-delay="1">
+        <div class="panel-title">引用本站内容</div>
+        <div class="panel-sub mt-8">建议采用 APA 第 7 版格式：</div>
+        <div class="notice mt-16" style="font-family:var(--font-serif);font-size:12.5px">Zhou, X. (2026). <i>SPORTSCI RESEARCH INSTITUTE: 运动科学全域智能科研平台</i> [Web resource]. Retrieved from 平台首页地址</div>
+        <ul class="sub-list mt-16">
+          <li>引用具体条目时，请同时标注原始文献的完整出处</li>
+          <li>平台分级为教学初评，正式学术写作请自行完成质量评价</li>
+          <li>模型输出不得作为原始数据引用，应说明为「平台模拟」</li>
+          <li>禁止将本站内容用于商业课程、付费社群或商业产品</li>
+        </ul>
+      </div>
+    </div>
+    <div class="notice mt-24 reveal"><b>关于条目准确性</b> · 文献信息经人工核对，但可能存在作者拼写、卷期页码或年份的疏漏。发现错误请通过反馈渠道告知，平台会在更新日志中记录修正。任何条目的结论均以原始出版物为准。</div>
+  </div></section>
+
+  <section class="section" style="padding-top:24px"><div class="container">
+    <div class="kicker reveal">DISCLAIMER</div>
+    <h2 class="h2 reveal">完整免责声明</h2>
+    <div class="danger-zone reveal">
+      <b>一、非医疗建议</b> · 本站全部内容仅用于学术研究与教育目的，不构成医疗建议、诊断、治疗方案或康复处方。平台不建立医患关系，任何依据本站内容作出的决策由使用者自行承担后果。
+    </div>
+    <div class="warn reveal" data-delay="1">
+      <b>二、运动风险</b> · 运动本身存在心血管、肌肉骨骼与热相关风险。开始新的训练计划、补剂方案或高强度项目前，应完成必要的健康筛查；患有慢性疾病、处于妊娠期或术后恢复期者须先获得医师许可。
+    </div>
+    <div class="danger-zone reveal" data-delay="2">
+      <b>三、急症处理</b> · 运动中若出现胸痛、胸闷、心悸、晕厥、严重呼吸困难、突发单侧无力或言语不清、意识改变伴高热、头部外伤后神经症状，请立即停止运动并呼叫急救，不要依赖本站内容自行判断。
+    </div>
+    <div class="warn reveal" data-delay="3">
+      <b>四、补剂与禁用物质</b> · 补剂可能与药物发生交互，并存在污染风险。竞技运动员须自行核对所属机构的最新禁用清单并遵守治疗用药豁免规则。本站不提供任何禁用物质的获取、剂量或使用指导。
+    </div>
+    <div class="notice reveal">
+      <b>五、模型与数据局限</b> · 平台仿真基于经典公式的教学化简化，未纳入个体差异、病理状态与环境变量；计算器输出为量级参考，不是精确预测。示例数据仅用于功能演示。
+    </div>
+    <div class="warn reveal" data-delay="1">
+      <b>六、外部链接</b> · 本站可能包含指向原始文献、开源项目或权威机构的外部链接，其内容与可用性由相应网站负责，本站不对其准确性作担保。
+    </div>
+  </div></section>
+
+  <section class="section" style="padding-top:24px"><div class="container">
+    <div class="kicker reveal">LICENSE</div>
+    <h2 class="h2 reveal">版权与授权范围</h2>
+    <div class="card mt-24 reveal">
+      <div class="panel-sub">本站原创内容（正文、图表、模型实现与界面设计）由 Xuran Zhou 采用 <a href="https://creativecommons.org/licenses/by-nc/4.0/deed.zh" target="_blank" rel="noopener">CC BY-NC 4.0</a> 协议共享。</div>
+      <div class="ab-allow mt-24">
+        <div>
+          <div class="footer-h">允许</div>
+          <ul class="yes">
+            <li>非商业性复制、转载与引用（须署名并注明协议）</li>
+            <li>教学、学习与学术研究中的非商业使用</li>
+            <li>基于本站内容进行改编，并标注修改说明</li>
+            <li>在个人博客、课程作业中引用并附原页面链接</li>
+          </ul>
+        </div>
+        <div>
+          <div class="footer-h">禁止</div>
+          <ul class="no">
+            <li>商业销售、付费课程、商业咨询中的使用</li>
+            <li>去除署名或声称本站内容为自己原创</li>
+            <li>将文献摘编冒充原始文献或篡改结论</li>
+            <li>将平台模型输出作为临床或选拔依据</li>
+          </ul>
+        </div>
+      </div>
+      <p class="tiny mt-16">数据库中的文献题录与摘要信息版权归原作者及出版机构所有；Three.js 遵循 MIT 许可，Apache ECharts 遵循 Apache-2.0 许可。</p>
+    </div>
+  </div></section>
+
+  <section class="section" style="padding-top:24px"><div class="container">
+    <div class="grid-2">
+      <div>
+        <div class="kicker reveal">PRIVACY</div>
+        <h2 class="h2 reveal">隐私与数据</h2>
+        <div class="card mt-24 reveal">
+          <ul class="sub-list" style="margin-top:0">
+            <li>不设置账号、不收集姓名、邮箱或任何表单输入</li>
+            <li>不使用统计、广告或第三方跟踪脚本</li>
+            <li>不使用 Cookie；计算过程不写入本地持久存储</li>
+            <li>所有计算在浏览器内存中完成，关闭页面即消失</li>
+            <li>静态托管服务商可能记录访问日志，本站无法控制</li>
+            <li>如未来引入新功能涉及数据处理，将在本页提前说明</li>
+          </ul>
+        </div>
+      </div>
+      <div>
+        <div class="kicker reveal">FEEDBACK</div>
+        <h2 class="h2 reveal">反馈与贡献</h2>
+        <div class="card mt-24 reveal">
+          <div class="panel-sub">本站不设在线表单。欢迎通过项目仓库提交 Issue 反馈文献错误、公式问题或交互缺陷。</div>
+          <ul class="sub-list mt-16">
+            <li>文献纠错：请附 PMID / DOI 与正确题录</li>
+            <li>模型问题：请说明输入参数与预期结果差异</li>
+            <li>内容建议：请说明所属板块与学科依据</li>
+            <li>引用申请：请说明用途、范围与署名方式</li>
+          </ul>
+          <p class="tiny mt-16">反馈将按「可复现、有出处、可验证」的原则处理；无法提供依据的主观建议可能不被采纳。</p>
+        </div>
+      </div>
+    </div>
+  </div></section>
+
+  <section class="section" style="padding-top:24px"><div class="container">
+    <div class="kicker reveal">CHANGELOG</div>
+    <h2 class="h2 reveal">更新日志</h2>
+    <div class="grid-2 mt-24">
+      <div class="card reveal">
+        <div class="ab-tl">
+          <div class="ab-tl-item">
+            <div class="ab-tl-v">V2.0 · 2026-11</div>
+            <div class="ab-tl-t">十大板块扩展</div>
+            <div class="ab-tl-d">新增补剂循证中心、人体运动系统图谱、运动医学与临床处方、训练计划中心与关于页；导航由五项扩展为十项，首页加入国际指南基准数据。</div>
+          </div>
+          <div class="ab-tl-item">
+            <div class="ab-tl-v">V1.1 · 2026-10</div>
+            <div class="ab-tl-t">证据与工具扩容</div>
+            <div class="ab-tl-d">证据分库由六扩至八，新增运动补剂与健康运动医学分库；仿真增至六模型，评估与工具各增至七项。</div>
+          </div>
+          <div class="ab-tl-item" style="padding-bottom:0">
+            <div class="ab-tl-v">V1.0 · 2026-09</div>
+            <div class="ab-tl-t">平台初版</div>
+            <div class="ab-tl-d">完成首页、证据数据库、生理仿真、智能评估与科研工具五大基础模块，确立暗色科研视觉与本地计算架构。</div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="card tone-b reveal" data-delay="1">
+          <div class="panel-title">版本说明</div>
+          <div class="panel-sub mt-8">版本号按「重大板块变更 · 内容扩容 · 修正」分三级记录。所有变更以仓库提交记录为准；本站不发布预发布版本。</div>
+          <div class="mt-16" style="display:flex;gap:8px;flex-wrap:wrap">
+            <span class="chip method-chip">V2.0 当前</span>
+            <span class="chip method-chip">静态站点</span>
+            <span class="chip method-chip">CC BY-NC 4.0</span>
+            <span class="chip method-chip">2026</span>
+          </div>
+        </div>
+        <div class="card tone-c mt-16 reveal" data-delay="2">
+          <div class="panel-title">致谢</div>
+          <div class="panel-sub mt-8">感谢 Three.js 与 Apache ECharts 开源社区提供的可视化能力；感谢所有公开文献的作者与出版机构，他们的一手研究构成了本站的证据基础。</div>
+        </div>
+      </div>
+    </div>
+    <div class="founder-tag mt-32 reveal"><span class="ft-dot"></span>DESIGNED &amp; BUILT BY <b>XURAN ZHOU</b></div>
+  </div></section>
+</main>
+
+<footer class="site-footer">
+  <div class="footer-grid">
+    <div class="footer-col footer-brand">
+      <div class="footer-title">SPORTSCI RESEARCH INSTITUTE</div>
+      <p>运动科学全域智能科研平台 · 文献证据可视化与科研辅助系统</p>
+      <p class="footer-meta">本科生独立搭建 · 学术非营利项目</p>
+    </div>
+    <div class="footer-col">
+      <div class="footer-h">免责声明</div>
+      <p>本平台全部内容仅用于学术研究与教育目的，不构成医疗建议、诊断或治疗方案。运动处方与康复训练须在执业医师或持证康复专业人员指导下进行。运动中若出现胸痛、胸闷、心悸、晕厥等症状，请立即停止运动并及时就医。</p>
+    </div>
+    <div class="footer-col">
+      <div class="footer-h">数据与引用</div>
+      <p>数据库文献信息版权归原作者及出版机构所有，条目摘编为学习性转述，结论以原始出版物为准。平台示例分析数据仅用于功能演示，不构成对任何真实个体的评估。</p>
+    </div>
+    <div class="footer-col">
+      <div class="footer-h">版权声明</div>
+      <p>© 2026 Xuran Zhou. 本站原创内容采用 <a href="https://creativecommons.org/licenses/by-nc/4.0/deed.zh" target="_blank" rel="noopener">CC BY-NC 4.0</a> 协议共享，仅限非商业使用并须署名。图表与模型均为平台自绘。Three.js 与 Apache ECharts 遵循其各自开源许可。</p>
+    </div>
+  </div>
+  <div class="footer-bottom">SPORTSCI RESEARCH INSTITUTE · DESIGNED &amp; BUILT BY XURAN ZHOU · 2026</div>
+</footer>
+</div>
+<script src="vendor/three.min.js"></script>
+<script src="assets/js/bg.js"></script>
+<script src="assets/js/cursor.js"></script>
+<script>SPORTSCI_BG.init("bg-canvas"); SPORTSCI_CURSOR.init();</script>
+</body>
+</html>

@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>运动医学与临床运动处方 · SPORTSCI RESEARCH INSTITUTE</title>
+<meta name="description" content="运动医学临床向模块：慢病 FITT-VP 运动处方查询、运动相关红旗症状与急症识别、软组织损伤分级与重返运动标准、常用药物对运动能力的影响。">
+<link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="%238fe8cd"/><stop offset="1" stop-color="%233f8a70"/></linearGradient></defs><polygon points="16,2.5 27.5,9 27.5,23 16,29.5 4.5,23 4.5,9" fill="rgba(255,79,227,0.07)" stroke="url(%23g)" stroke-width="1.6"/><polygon points="16,7 23.5,11.2 23.5,20.8 16,25 8.5,20.8 8.5,11.2" fill="none" stroke="url(%23g)" stroke-width="0.8" opacity="0.5"/><path d="M8,11 L14,21 M14,11 L8,21 M15,11 L23,11 L15,21 L23,21" fill="none" stroke="%23c9ae85" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><circle cx="25" cy="16" r="1.6" fill="%238fe8cd"/></svg>'>
+<link rel="stylesheet" href="assets/css/main.css">
+<style>
+  .md-pane { display: none; }
+  .md-pane.active { display: block; }
+  .md-fitt { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+  .md-fitt-item { padding: 16px 18px; }
+  .md-fitt-item .fk { font-size: 11px; letter-spacing: 0.18em; color: var(--ink-faint); text-transform: uppercase; }
+  .md-fitt-item .fv { font-size: 13.5px; color: #f2dffb; margin-top: 6px; line-height: 1.65; }
+  .md-cond-list { display: flex; flex-wrap: wrap; gap: 6px; }
+  .md-flag { display: flex; gap: 14px; padding: 14px 16px; border-bottom: 1px dashed rgba(200,120,255,0.08); }
+  .md-flag:last-child { border-bottom: none; }
+  .md-flag-num { flex: none; width: 26px; height: 26px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 11px; color: #ff9df2; background: rgba(255,77,109,0.10); border: 1px solid rgba(255,77,109,0.28); }
+  .md-flag-t { font-size: 13.5px; color: #f5e4ff; font-weight: 600; }
+  .md-flag-d { font-size: 12.5px; color: var(--ink-dim); margin-top: 4px; line-height: 1.65; }
+  .md-stage { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 14px; }
+  .md-stage .card { padding: 16px; }
+  .md-stage .sn { font-size: 10px; letter-spacing: 0.2em; color: var(--accent-dim); }
+  .md-stage .st { font-size: 14px; font-weight: 600; color: #f5e4ff; margin-top: 6px; }
+  .md-stage .sd { font-size: 12px; color: var(--ink-dim); margin-top: 6px; line-height: 1.6; }
+  @media (max-width: 900px) { .md-fitt, .md-stage { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 560px) { .md-fitt, .md-stage { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<canvas id="bg-canvas"></canvas>
+<header class="nav">
+  <a class="nav-brand" href="index.html">
+    <svg class="nav-logo" viewBox="0 0 32 32" aria-hidden="true"><defs><linearGradient id="nlg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff9df2"/><stop offset="1" stop-color="#b026c9"/></linearGradient></defs><polygon points="16,2.5 27.5,9 27.5,23 16,29.5 4.5,23 4.5,9" fill="rgba(255,79,227,0.06)" stroke="url(#nlg)" stroke-width="1.5"/><polygon points="16,7 23.5,11.2 23.5,20.8 16,25 8.5,20.8 8.5,11.2" fill="none" stroke="#b026c9" stroke-width="0.7" opacity="0.55"/><path d="M8,11 L14,21 M14,11 L8,21 M15,11 L23,11 L15,21 L23,21" fill="none" stroke="#ffb54d" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="24.5" cy="23" r="1.3" fill="#ff9df2"/></svg>
+    <span class="nav-title">SPORTSCI RESEARCH <em>INSTITUTE</em></span>
+  </a>
+  <nav class="nav-links">
+    <a href="index.html">首页</a>
+    <a href="database.html">证据数据库</a>
+    <a href="simulation.html">生理仿真</a>
+    <a href="assessment.html">智能评估</a>
+    <a href="tools.html">科研工具</a>
+    <a href="supplements.html">补剂中心</a>
+    <a href="anatomy.html">人体图谱</a>
+    <a href="medicine.html" class="active">运动医学</a>
+    <a href="plan.html">训练计划</a>
+    <a href="about.html">关于</a>
+  </nav>
+</header>
+
+<div class="page">
+<main>
+  <section class="section"><div class="container">
+    <div class="kicker">MODULE 07 · SPORTS MEDICINE</div>
+    <h1 class="h1">运动医学与临床运动处方</h1>
+    <p class="lead mt-16">面向运动科学学生的临床交界模块：七类常见慢病的 FITT-VP 运动处方框架、运动相关红旗症状与急症的识别要点、软组织损伤分级与重返运动标准，以及常用药物对心率、血糖、体温调节与出血风险的影响。</p>
+
+    <div class="danger-zone mt-32 reveal"><b>首先声明</b> · 本模块为教学性摘编，不构成医疗建议。慢病患者开始运动前应完成医学评估与运动风险分层；红旗症状一旦出现，应立即停止运动并就医或呼叫急救，不得自行处理。</div>
+
+    <div class="tabbar mt-32" id="md-tabs">
+      <button class="tab active" data-pane="rx">慢病运动处方</button>
+      <button class="tab" data-pane="flag">红旗与急症</button>
+      <button class="tab" data-pane="injury">损伤分级与重返</button>
+      <button class="tab" data-pane="drug">用药与运动</button>
+    </div>
+
+    <!-- 处方 -->
+    <div class="md-pane active" id="md-rx">
+      <div class="glass" style="padding:18px 20px">
+        <div class="panel-sub mb-8">选择疾病查看 FITT-VP 框架（频率 Frequency / 强度 Intensity / 时间 Time / 类型 Type / 总量 Volume / 进阶 Progression）</div>
+        <div class="md-cond-list" id="md-cond-chips"></div>
+      </div>
+      <div class="mt-16">
+        <div class="card tone-a" style="padding:20px 22px">
+          <div class="flex-between">
+            <div>
+              <div class="panel-title" id="md-rx-name">高血压</div>
+              <div class="panel-sub" id="md-rx-en">Hypertension</div>
+            </div>
+            <span class="tag" id="md-rx-tag">ACSM GETP 11th</span>
+          </div>
+          <p class="tiny mt-8" id="md-rx-note"></p>
+        </div>
+        <div class="md-fitt mt-16" id="md-rx-grid"></div>
+        <div class="warn mt-16" id="md-rx-caution"></div>
+      </div>
+      <div class="notice mt-24"><b>处方解读</b> · FITT-VP 是框架而非固定模板。实际处方须结合患者的运动试验结果、合并症、用药与主观耐受度个体化调整；抗阻训练中的呼吸模式（避免 Valsalva 动作）与热身/冷身同样重要。</div>
+    </div>
+
+    <!-- 红旗 -->
+    <div class="md-pane" id="md-flag">
+      <div class="grid-2">
+        <div class="card tone-d">
+          <div class="panel-title">运动相关红旗症状</div>
+          <div class="panel-sub mt-8">出现下列任一情况，应停止运动并寻求医疗评估；部分属于急症，需立即呼叫急救。</div>
+          <div class="mt-16" id="md-flag-list"></div>
+        </div>
+        <div>
+          <div class="table-wrap">
+            <table class="table">
+              <thead><tr><th>运动急症</th><th>识别要点</th><th>现场处置</th></tr></thead>
+              <tbody>
+                <tr><td><span class="t-title">心源性猝死 / 心脏骤停</span></td><td>突发倒地、无反应、无正常呼吸</td><td>立即呼救 + 胸外按压 + AED</td></tr>
+                <tr><td><span class="t-title">劳力性热射病</span></td><td>核心体温 &gt;40 °C、意识改变、无汗或皮肤灼热</td><td>快速冷水浸泡降温 + 转运</td></tr>
+                <tr><td><span class="t-title">运动相关脑震荡</span></td><td>头部撞击后头痛、头晕、恶心、平衡或记忆异常</td><td>立即离场，SCAT6 评估，禁止当日重返</td></tr>
+                <tr><td><span class="t-title">急性冠脉综合征</span></td><td>压榨性胸痛、放射至左臂/下颌、伴冷汗</td><td>停止运动、静卧、呼叫急救，勿自行驾车</td></tr>
+                <tr><td><span class="t-title">卒中</span></td><td>突发单侧面部/肢体无力、言语不清、视物异常</td><td>记录发作时间，立即急诊（BE-FAST）</td></tr>
+                <tr><td><span class="t-title">跟腱完全断裂</span></td><td>小腿后方「被踢」感、Thompson 试验阳性</td><td>制动、免负重、尽快骨科评估</td></tr>
+                <tr><td><span class="t-title">张力性气胸</span></td><td>突发单侧胸痛、呼吸困难、患侧呼吸音消失</td><td>立即急救，属危及生命的急症</td></tr>
+                <tr><td><span class="t-title">横纹肌溶解</span></td><td>极端负荷后肌痛、肿胀、茶色尿、乏力</td><td>立即就医，评估肌酸激酶与肾功能</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="danger-zone mt-16"><b>急救优先</b> · 任何意识丧失、呼吸异常、持续胸痛或疑似卒中，都应优先启动急救流程，而不是继续观察或尝试「缓一缓就好」。</div>
+        </div>
+      </div>
+      <div class="card tone-b mt-24">
+        <div class="panel-title">运动前筛查的分层思路</div>
+        <div class="panel-sub mt-8">筛查的目标是识别「需要医学评估」的人，而不是给所有人贴风险标签。</div>
+        <div class="grid-3 mt-16">
+          <div><div class="panel-title" style="font-size:14px">第一步 · 症状与病史</div><p class="tiny mt-8">胸痛、晕厥、劳力性呼吸困难、心悸、已知心脏病、家族早发猝死史。</p></div>
+          <div><div class="panel-title" style="font-size:14px">第二步 · 静息评估</div><p class="tiny mt-8">血压、心率、BMI/腰围、静息心电图（高风险或竞技人群）。</p></div>
+          <div><div class="panel-title" style="font-size:14px">第三步 · 运动试验</p><p class="tiny mt-8">最大或次最大运动试验用于高风险人群与心脏康复处方制定。</p></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 损伤 -->
+    <div class="md-pane" id="md-injury">
+      <div class="grid-2">
+        <div class="table-wrap">
+          <table class="table">
+            <thead><tr><th>组织</th><th>分级</th><th>病理</th><th>典型表现</th></tr></thead>
+            <tbody>
+              <tr><td><span class="t-title">肌肉</span></td><td>I 度</td><td>少量肌纤维撕裂</td><td>局部压痛，力量轻度下降</td></tr>
+              <tr><td><span class="t-title">肌肉</span></td><td>II 度</td><td>部分撕裂</td><td>明显疼痛、肿胀、力量下降</td></tr>
+              <tr><td><span class="t-title">肌肉</span></td><td>III 度</td><td>完全断裂</td><td>可触及凹陷，功能丧失</td></tr>
+              <tr><td><span class="t-title">韧带</span></td><td>I 度</td><td>微撕裂，关节稳定</td><td>轻度肿胀，应力试验阴性</td></tr>
+              <tr><td><span class="t-title">韧带</span></td><td>II 度</td><td>部分撕裂，轻中度不稳</td><td>应力试验松弛，终末点软</td></tr>
+              <tr><td><span class="t-title">韧带</span></td><td>III 度</td><td>完全撕裂，明显不稳</td><td>关节不稳，功能显著受限</td></tr>
+              <tr><td><span class="t-title">肌腱</span></td><td>反应性</td><td>负荷后短暂增厚</td><td>运动后疼痛，休息可缓解</td></tr>
+              <tr><td><span class="t-title">肌腱</span></td><td>肌腱病</td><td>结构退变，胶原紊乱</td><td>持续负荷相关疼痛，晨僵</td></tr>
+              <tr><td><span class="t-title">骨</span></td><td>应力反应</td><td>骨髓水肿，无骨折线</td><td>负重痛，影像可见水肿</td></tr>
+              <tr><td><span class="t-title">骨</span></td><td>应力性骨折</td><td>骨皮质断裂</td><td>点状压痛，负重困难</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div>
+          <div class="card tone-c">
+            <div class="panel-title">重返运动（RTP）四阶段</div>
+            <div class="panel-sub mt-8">以功能标准而非时间标准决策；每阶段须满足出口条件再进阶。</div>
+            <div class="md-stage">
+              <div class="card tone-a"><div class="sn">STAGE 01</div><div class="st">临床愈合</div><div class="sd">无静息痛、肿胀消退、日常活动无碍</div></div>
+              <div class="card tone-b"><div class="sn">STAGE 02</div><div class="st">功能重建</div><div class="sd">关节活动度恢复，基础力量与本体感觉训练</div></div>
+              <div class="card tone-c"><div class="sn">STAGE 03</div><div class="st">专项准备</div><div class="sd">力量对称性 ≥90%、变向与冲刺无痛</div></div>
+              <div class="card tone-d"><div class="sn">STAGE 04</div><div class="st">重返赛场</div><div class="sd">完整训练与比赛负荷，持续监测再损伤信号</div></div>
+            </div>
+          </div>
+          <div class="card tone-b mt-16">
+            <div class="panel-title">RTP 常用客观门槛</div>
+            <ul class="sub-list mt-16">
+              <li>肢体对称指数（LSI）≥90%，双侧力量与跳跃测试对比</li>
+              <li>疼痛与肿胀在训练后 24 h 内不反弹</li>
+              <li>专项动作（变向、落地、踢击）在递增负荷下无症状</li>
+              <li>心理准备度评估（恐惧再伤、信心量表）</li>
+              <li>腘绳肌拉伤：离心力量与柔韧性达标后再恢复全速冲刺</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="notice mt-24"><b>关于「POLICE」</b> · 急性软组织损伤处理已由 RICE 演进为 POLICE（保护、适度负荷、冰敷、加压、抬高），强调早期适度负荷而非长期完全制动；具体方案须由专业人员评估。</div>
+    </div>
+
+    <!-- 用药 -->
+    <div class="md-pane" id="md-drug">
+      <div class="table-wrap">
+        <table class="table">
+          <thead><tr><th>药物类别</th><th>代表药物</th><th>对运动的影响</th><th>实践要点</th></tr></thead>
+          <tbody>
+            <tr><td><span class="t-title">β-受体阻断剂</span></td><td>美托洛尔、普萘洛尔</td><td>心率与血压反应被钝化，最大心率下降</td><td>用 RPE 或运动试验制定强度，不依赖年龄预测心率</td></tr>
+            <tr><td><span class="t-title">他汀类</td><td>阿托伐他汀、瑞舒伐他汀</td><td>可能引起肌痛、肌酶升高，极少数横纹肌溶解</td><td>出现不明肌痛应查肌酸激酶并就医，避免与高强度负荷骤增同步</td></tr>
+            <tr><td><span class="t-title">降糖药 / 胰岛素</span></td><td>胰岛素、磺脲类</td><td>运动增加胰岛素敏感性，低血糖风险</td><td>运动前测血糖、随身携带碳水，避开药效峰值时段</td></tr>
+            <tr><td><span class="t-title">抗凝 / 抗血小板药</td><td>华法林、阿司匹林、氯吡格雷</td><td>碰撞与跌倒后出血风险升高</td><td>避免高碰撞项目；头部外伤后降低就医阈值</td></tr>
+            <tr><td><span class="t-title">NSAIDs</td><td>布洛芬、双氯芬酸</td><td>短期镇痛，长期可能影响肌腱/骨愈合</td><td>不推荐以「掩盖疼痛继续训练」为目的常规使用</td></tr>
+            <tr><td><span class="t-title">吸入型 β₂ 激动剂</span></td><td>沙丁胺醇、福莫特罗</td><td>支气管舒张，竞技项目受阈值与 TUE 约束</td><td>哮喘运动员须按规范申报，避免超治疗剂量</td></tr>
+            <tr><td><span class="t-title">利尿剂</td><td>氢氯噻嗪、呋塞米</td><td>脱水与电解质紊乱，热环境风险升高</td><td>训练与比赛期间加强补液与电解质监测</td></tr>
+            <tr><td><span class="t-title">糖皮质激素</span></td><td>泼尼松（全身用药）</td><td>长期使用影响骨密度与肌腱强度</td><td>长期用药者谨慎推进冲击性负荷，关注骨健康</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="grid-2 mt-24">
+        <div class="card tone-a">
+          <div class="panel-title">抗阻训练中的血压反应</div>
+          <div class="panel-sub mt-8">大负荷抗阻时的收缩压可显著升高，Valsalva 动作会进一步加剧。高血压人群应采用中等负荷、规律呼吸、较长组间休息。</div>
+        </div>
+        <div class="card tone-b">
+          <div class="panel-title">热环境与药物交互</div>
+          <div class="panel-sub mt-8">利尿剂、部分降压药与抗胆碱能药物会削弱体温调节或加重脱水；热环境训练应降低强度、缩短单次时长并延长适应期（约 1–2 周）。</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="danger-zone mt-32 reveal"><b>最终提示</b> · 本页所有处方参数为教学框架，不可直接用于患者。出现胸痛、晕厥、呼吸困难、意识改变、单侧无力或茶色尿，请立即停止运动并就医。</div>
+  </div></section>
+</main>
+
+<footer class="site-footer">
+  <div class="footer-grid">
+    <div class="footer-col footer-brand">
+      <div class="footer-title">SPORTSCI RESEARCH INSTITUTE</div>
+      <p>运动科学全域智能科研平台 · 文献证据可视化与科研辅助系统</p>
+      <p class="footer-meta">本科生独立搭建 · 学术非营利项目</p>
+    </div>
+    <div class="footer-col">
+      <div class="footer-h">免责声明</div>
+      <p>本平台全部内容仅用于学术研究与教育目的，不构成医疗建议、诊断或治疗方案。运动处方与康复训练须在执业医师或持证康复专业人员指导下进行。运动中若出现胸痛、胸闷、心悸、晕厥等症状，请立即停止运动并及时就医。</p>
+    </div>
+    <div class="footer-col">
+      <div class="footer-h">数据与引用</div>
+      <p>数据库文献信息版权归原作者及出版机构所有，条目摘编为学习性转述，结论以原始出版物为准。平台示例分析数据仅用于功能演示，不构成对任何真实个体的评估。</p>
+    </div>
+    <div class="footer-col">
+      <div class="footer-h">版权声明</div>
+      <p>© 2026 Xuran Zhou. 本站原创内容采用 <a href="https://creativecommons.org/licenses/by-nc/4.0/deed.zh" target="_blank" rel="noopener">CC BY-NC 4.0</a> 协议共享，仅限非商业使用并须署名。图表与模型均为平台自绘。Three.js 与 Apache ECharts 遵循其各自开源许可。</p>
+    </div>
+  </div>
+  <div class="footer-bottom">SPORTSCI RESEARCH INSTITUTE · DESIGNED &amp; BUILT BY XURAN ZHOU · 2026</div>
+</footer>
+</div>
+<script src="vendor/three.min.js"></script>
+<script src="assets/js/bg.js"></script>
+<script src="assets/js/cursor.js"></script>
+<script src="assets/js/medicine.js"></script>
+<script>SPORTSCI_BG.init("bg-canvas"); SPORTSCI_CURSOR.init(); SPORTSCI_MEDICINE.init();</script>
+</body>
+</html>

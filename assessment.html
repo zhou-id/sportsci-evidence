@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>运动损伤智能评估 · SPORTSCI RESEARCH INSTITUTE</title>
+<meta name="description" content="循证运动损伤风险筛查：肌肉拉伤、运动胸痛红旗分诊、ACWR 负荷监控、ACL 重返运动核查，附个性化循证建议。">
+<link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="%238fe8cd"/><stop offset="1" stop-color="%233f8a70"/></linearGradient></defs><polygon points="16,2.5 27.5,9 27.5,23 16,29.5 4.5,23 4.5,9" fill="rgba(255,79,227,0.07)" stroke="url(%23g)" stroke-width="1.6"/><polygon points="16,7 23.5,11.2 23.5,20.8 16,25 8.5,20.8 8.5,11.2" fill="none" stroke="url(%23g)" stroke-width="0.8" opacity="0.5"/><path d="M8,11 L14,21 M14,11 L8,21 M15,11 L23,11 L15,21 L23,21" fill="none" stroke="%23c9ae85" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><circle cx="25" cy="16" r="1.6" fill="%238fe8cd"/></svg>'>
+<link rel="stylesheet" href="assets/css/main.css">
+<style>
+  .as-pane { display: none; }
+  .as-pane.active { display: block; }
+  .as-risk { display: inline-flex; align-items: center; gap: 10px; padding: 10px 18px; border-radius: 10px; font-size: 15px; font-weight: 700; letter-spacing: 0.1em; border: 1px solid; }
+  .as-risk.risk-low { border-color: rgba(61,232,255,0.35); background: rgba(61,232,255,0.07); }
+  .as-risk.risk-mid { border-color: rgba(255,181,77,0.4); background: rgba(255,181,77,0.08); }
+  .as-risk.risk-high { border-color: rgba(255,77,109,0.45); background: rgba(255,77,109,0.09); }
+  .as-rec { padding: 12px 14px; border-left: 2px solid rgba(255,79,227,0.3); margin-top: 10px; font-size: 13px; color: var(--ink-dim); }
+  .as-rec b { color: var(--ink); }
+  .as-ref { font-size: 11.5px; color: var(--ink-faint); display: block; margin-top: 6px; }
+  .as-flag { display: flex; align-items: flex-start; gap: 10px; padding: 9px 0; border-bottom: 1px dashed rgba(200,120,255,0.08); cursor: pointer; font-size: 13.5px; }
+  .as-flag input { margin-top: 4px; accent-color: var(--danger); width: 15px; height: 15px; }
+  .as-flag.green input { accent-color: var(--accent-dim); }
+  .as-score { font-size: 40px; font-weight: 700; color: var(--accent); font-variant-numeric: tabular-nums; }
+</style>
+</head>
+<body>
+<canvas id="bg-canvas"></canvas>
+<header class="nav">
+  <a class="nav-brand" href="index.html">
+    <svg class="nav-logo" viewBox="0 0 32 32" aria-hidden="true"><defs><linearGradient id="nlg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff9df2"/><stop offset="1" stop-color="#b026c9"/></linearGradient></defs><polygon points="16,2.5 27.5,9 27.5,23 16,29.5 4.5,23 4.5,9" fill="rgba(255,79,227,0.06)" stroke="url(#nlg)" stroke-width="1.5"/><polygon points="16,7 23.5,11.2 23.5,20.8 16,25 8.5,20.8 8.5,11.2" fill="none" stroke="#b026c9" stroke-width="0.7" opacity="0.55"/><path d="M8,11 L14,21 M14,11 L8,21 M15,11 L23,11 L15,21 L23,21" fill="none" stroke="#ffb54d" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="24.5" cy="23" r="1.3" fill="#ff9df2"/></svg>
+    <span class="nav-title">SPORTSCI RESEARCH <em>INSTITUTE</em></span>
+  </a>
+  <nav class="nav-links">
+    <a href="index.html">首页</a>
+    <a href="database.html">证据数据库</a>
+    <a href="simulation.html">生理仿真</a>
+    <a href="assessment.html" class="active">智能评估</a>
+    <a href="tools.html">科研工具</a>
+    <a href="supplements.html">补剂中心</a>
+    <a href="anatomy.html">人体图谱</a>
+    <a href="medicine.html">运动医学</a>
+    <a href="plan.html">训练计划</a>
+    <a href="about.html">关于</a>
+  </nav>
+</header>
+
+<div class="page">
+<main>
+  <section class="section"><div class="container">
+    <div class="kicker">MODULE 03 · INTELLIGENT ASSESSMENT</div>
+    <h1 class="h1">运动损伤智能评估系统</h1>
+    <p class="lead mt-16">基于循证文献规则引擎的风险筛查工具。所有结论仅为教学演示与风险提示，<b>不构成医疗诊断</b>；红旗症状请务必及时就医。</p>
+
+    <div class="tabbar mt-32" id="as-tabs">
+      <button class="tab active" data-pane="strain">肌肉拉伤风险筛查</button>
+      <button class="tab" data-pane="chest">运动胸痛红旗分诊</button>
+      <button class="tab" data-pane="acwr">ACWR 负荷-损伤监控</button>
+      <button class="tab" data-pane="acl">ACL 重返运动核查</button>
+      <button class="tab" data-pane="parq">PAR-Q+ 运动前筛查</button>
+      <button class="tab" data-pane="orm">1RM 估算与力量评级</button>
+      <button class="tab" data-pane="ea">能量可用性评估</button>
+    </div>
+
+    <!-- ===== 1 肌肉拉伤 ===== -->
+    <div class="as-pane active" id="as-strain">
+      <div class="grid-2">
+        <div class="card tone-a">
+          <div class="panel-title">风险因素输入</div>
+          <div class="panel-sub mb-16">腘绳肌拉伤 · 短跑/球类场景</div>
+          <label class="label">年龄（岁） · ≥23 岁风险升高</label>
+          <div class="slider-row"><input type="range" class="slider" id="st-age" min="15" max="40" value="21"><output class="slider-val num" id="st-age-val">21</output></div>
+          <label class="check-row"><input type="checkbox" id="st-hx"><span>既往 12 个月内腘绳肌拉伤史（最强单一预测因子）</span></label>
+          <label class="check-row"><input type="checkbox" id="st-speed"><span>每周高速跑暴露 ≥ 2 次且未经渐进递增</span></label>
+          <label class="check-row"><input type="checkbox" id="st-fatigue"><span>当前处于疲劳累积期（睡眠不足 / 连续比赛周）</span></label>
+          <label class="check-row"><input type="checkbox" id="st-nordic"><span>规律进行北欧腘绳肌离心训练（保护因素）</span></label>
+        </div>
+        <div class="card tone-a">
+          <div class="panel-title">评估结果</div>
+          <div class="mt-16"><span class="as-risk risk-low" id="st-badge">—</span></div>
+          <div class="stat mt-16"><div class="as-score num" id="st-score">0</div><div class="stat-label">加权风险评分 / 10</div></div>
+          <div id="st-recs"></div>
+          <div class="notice mt-16"><b>证据锚点</b> · van Dyk 2019 BJSM（Nordic 使拉伤率减半）；Lauersen 2014 BJSM（力量训练减伤约 2/3）；Gabbett 2016 BJSM（负荷递增）。</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== 2 胸痛红旗 ===== -->
+    <div class="as-pane" id="as-chest">
+      <div class="grid-2">
+        <div class="card tone-d">
+          <div class="panel-title">症状核查</div>
+          <div class="panel-sub mb-16">运动中/后胸痛 · 先排心肺，再考虑胸廓</div>
+          <div class="sim-sub-h">红旗症状（任一勾选即触发就医建议）</div>
+          <label class="as-flag"><input type="checkbox" class="rf"><span>劳力性胸骨后压榨样疼痛，休息后缓解</span></label>
+          <label class="as-flag"><input type="checkbox" class="rf"><span>疼痛放射至左臂 / 下颌 / 背部</span></label>
+          <label class="as-flag"><input type="checkbox" class="rf"><span>伴晕厥、近乎晕厥或心悸</span></label>
+          <label class="as-flag"><input type="checkbox" class="rf"><span>不成比例的呼吸困难或静息痛</span></label>
+          <label class="as-flag"><input type="checkbox" class="rf"><span>一级亲属早发心源性猝死家族史</span></label>
+          <div class="sim-sub-h mt-16">支持肌肉骨骼来源的特征</div>
+          <label class="as-flag green"><input type="checkbox" class="msf"><span>按压局部可完全复现疼痛</span></label>
+          <label class="as-flag green"><input type="checkbox" class="msf"><span>疼痛随呼吸 / 咳嗽 / 转体加重</span></label>
+          <label class="as-flag green"><input type="checkbox" class="msf"><span>近期有划船 / 投掷 / 大负荷核心训练史</span></label>
+        </div>
+        <div class="card tone-d">
+          <div class="panel-title">分诊结论</div>
+          <div id="ch-result" class="mt-16"></div>
+          <div class="notice mt-16"><b>胸廓损伤线索</b> · 赛艇等重复屈体负荷与肋骨应力性损伤相关（Karlson 1998 AJSM）；肋间肌拉伤与呼吸性胸痛多为自限性，但必须先排除心肺红旗。</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== 3 ACWR ===== -->
+    <div class="as-pane" id="as-acwr">
+      <div class="grid-2">
+        <div class="card tone-b">
+          <div class="panel-title">近 4 周训练负荷</div>
+          <div class="panel-sub mb-16">单位：任意负荷单位（TRIMP / sRPE×分钟 / 公里）</div>
+          <label class="label">第 1 周（4 周前）</label>
+          <div class="slider-row"><input type="range" class="slider" id="aw-0" min="0" max="1200" step="10" value="380"><output class="slider-val num" id="aw-0-val">380</output></div>
+          <label class="label">第 2 周</label>
+          <div class="slider-row"><input type="range" class="slider" id="aw-1" min="0" max="1200" step="10" value="400"><output class="slider-val num" id="aw-1-val">400</output></div>
+          <label class="label">第 3 周</label>
+          <div class="slider-row"><input type="range" class="slider" id="aw-2" min="0" max="1200" step="10" value="420"><output class="slider-val num" id="aw-2-val">420</output></div>
+          <label class="label">第 4 周（本周 · 急性负荷）</label>
+          <div class="slider-row"><input type="range" class="slider" id="aw-3" min="0" max="1200" step="10" value="500"><output class="slider-val num" id="aw-3-val">500</output></div>
+        </div>
+        <div class="card tone-b">
+          <div class="panel-title">ACWR 判读</div>
+          <div class="panel-sub">解耦式：本周 ÷ 前三周均值</div>
+          <div class="chart-box-sm mt-8" id="acwr-chart"></div>
+          <div class="mt-16"><span class="as-risk risk-low" id="acwr-badge">—</span></div>
+          <div id="acwr-recs"></div>
+          <div class="notice mt-16"><b>证据锚点</b> · Gabbett 2016 BJSM「训练-损伤预防悖论」；Soligard 2016 IOC 共识。0.8–1.3 为相对安全区间，&gt;1.5 损伤风险显著升高，&lt;0.8 提示欠训练。</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== 4 ACL 重返 ===== -->
+    <div class="as-pane" id="as-acl">
+      <div class="grid-2">
+        <div class="card tone-c">
+          <div class="panel-title">重返运动核查表</div>
+          <div class="panel-sub mb-16">基于 Delaware-Oslo 与 Kyritsis 出院标准</div>
+          <label class="as-flag green"><input type="checkbox" class="acl-c"><span>术后时间 ≥ 9 个月（每延迟 1 个月再损伤率显著下降）</span></label>
+          <label class="as-flag green"><input type="checkbox" class="acl-c"><span>无疼痛、无关节积液 / 肿胀</span></label>
+          <label class="as-flag green"><input type="checkbox" class="acl-c"><span>膝关节全范围活动度恢复</span></label>
+          <label class="as-flag green"><input type="checkbox" class="acl-c"><span>股四头肌等速肌力对称性 ≥ 90%（LSI）</span></label>
+          <label class="as-flag green"><input type="checkbox" class="acl-c"><span>单腿跳系列测试 ≥ 90%（距离 / 三连跳 / 交叉跳 / 计时跳）</span></label>
+          <label class="as-flag green"><input type="checkbox" class="acl-c"><span>心理就绪量表达标（如 ACL-RSI）</span></label>
+        </div>
+        <div class="card tone-c">
+          <div class="panel-title">评估结果</div>
+          <div class="stat mt-16"><div class="as-score num" id="acl-met">0 / 6</div><div class="stat-label">达标条目</div></div>
+          <div class="mt-16"><span class="as-risk risk-mid" id="acl-badge">—</span></div>
+          <div id="acl-recs"></div>
+          <div class="notice mt-16"><b>证据锚点</b> · Grindem 2016 BJSM（达标者再损伤风险降低 84%）；Kyritsis 2016 BJSM（未达 6 项标准者移植物断裂风险 ×4）。</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== 5 PAR-Q+ ===== -->
+    <div class="as-pane" id="as-parq">
+      <div class="grid-2">
+        <div class="card tone-b">
+          <div class="panel-title">PAR-Q+ 一般健康问卷</div>
+          <div class="panel-sub mb-16">运动前自我筛查国际标准 · 7 个一般问题</div>
+          <label class="as-flag"><input type="checkbox" class="pq"><span>医生是否曾告知你有心脏疾病 <b>或</b> 高血压？</span></label>
+          <label class="as-flag"><input type="checkbox" class="pq"><span>休息时或日常活动中是否出现过胸痛？</span></label>
+          <label class="as-flag"><input type="checkbox" class="pq"><span>是否曾因头晕失去平衡，或近 12 个月内发生过晕厥？</span></label>
+          <label class="as-flag"><input type="checkbox" class="pq"><span>是否有经确诊的慢性疾病（如糖尿病、哮喘等）？</span></label>
+          <label class="as-flag"><input type="checkbox" class="pq"><span>是否有影响运动的骨骼、关节或肌肉问题？</span></label>
+          <label class="as-flag"><input type="checkbox" class="pq"><span>是否正在服用心脏疾病或高血压的处方药物？</span></label>
+          <label class="as-flag"><input type="checkbox" class="pq"><span>是否有医生认为需限制运动的其他医学原因？</span></label>
+          <label class="label mt-16">年龄（岁） · ≥45 岁建议更谨慎递增</label>
+          <div class="slider-row"><input type="range" class="slider" id="pq-age" min="12" max="80" value="22"><output class="slider-val num" id="pq-age-val">22</output></div>
+        </div>
+        <div class="card tone-b">
+          <div class="panel-title">筛查结论</div>
+          <div id="pq-result" class="mt-16"></div>
+          <div class="notice mt-16"><b>证据锚点</b> · PAR-Q+ 协作组织官方问卷（2021 修订版）；ACSM 运动前健康筛查更新（Riebe 2015 MSSE）——无症状低风险人群可直接从中低强度起步，无需强制医疗许可。</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== 6 1RM 估算 ===== -->
+    <div class="as-pane" id="as-orm">
+      <div class="grid-2">
+        <div class="card tone-a">
+          <div class="panel-title">次极限负荷输入</div>
+          <div class="panel-sub mb-16">Epley / Brzycki / Lombardi 三公式融合估算</div>
+          <label class="label">训练重量（kg）</label>
+          <div class="slider-row"><input type="range" class="slider" id="orm-w" min="20" max="220" step="2.5" value="60"><output class="slider-val num" id="orm-w-val">60</output></div>
+          <label class="label">标准动作完成次数（1–12 次内估算最准）</label>
+          <div class="slider-row"><input type="range" class="slider" id="orm-r" min="1" max="15" step="1" value="8"><output class="slider-val num" id="orm-r-val">8</output></div>
+          <label class="label">动作</label>
+          <select class="select mb-16" id="orm-ex">
+            <option value="squat" selected>深蹲 Squat</option>
+            <option value="bench">卧推 Bench Press</option>
+            <option value="deadlift">硬拉 Deadlift</option>
+            <option value="ohp">实力举 Overhead Press</option>
+          </select>
+          <label class="label">性别（常模分级用）</label>
+          <select class="select mb-16" id="orm-sex">
+            <option value="m" selected>男性</option>
+            <option value="f">女性</option>
+          </select>
+          <label class="label">体重（kg）</label>
+          <div class="slider-row"><input type="range" class="slider" id="orm-bw" min="40" max="130" step="1" value="70"><output class="slider-val num" id="orm-bw-val">70</output></div>
+        </div>
+        <div class="card tone-a">
+          <div class="panel-title">估算结果</div>
+          <div class="sim-stat-grid mt-16">
+            <div class="stat"><div class="stat-num num" id="orm-1rm">—</div><div class="stat-label">估算 1RM · kg（三式均值）</div></div>
+            <div class="stat"><div class="stat-num num" id="orm-ratio">—</div><div class="stat-label">相对力量 · ×体重</div></div>
+          </div>
+          <div class="mt-16"><span class="as-risk risk-low" id="orm-tier">—</span></div>
+          <div class="table-wrap mt-16"><table class="table">
+            <thead><tr><th>强度 %1RM</th><th>重量 kg</th><th>参考次数</th></tr></thead>
+            <tbody id="orm-table"></tbody>
+          </table></div>
+          <div class="notice mt-16"><b>方法说明</b> · 估算式在 ≤10 次时误差较小（教学演示合并三式）。力量分级为大众训练者教学常模（相对力量：1RM/体重），不同项目与人群差异显著，不可作竞技选材依据。</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== 7 能量可用性 ===== -->
+    <div class="as-pane" id="as-ea">
+      <div class="grid-2">
+        <div class="card tone-d">
+          <div class="panel-title">能量摄入与消耗输入</div>
+          <div class="panel-sub mb-16">EA =（摄入 − 运动消耗）÷ 去脂体重</div>
+          <label class="label">体重（kg）</label>
+          <div class="slider-row"><input type="range" class="slider" id="ea-bw" min="40" max="120" step="1" value="65"><output class="slider-val num" id="ea-bw-val">65</output></div>
+          <label class="label">体脂率（%） · 用于估算去脂体重 FFM</label>
+          <div class="slider-row"><input type="range" class="slider" id="ea-bf" min="6" max="40" step="0.5" value="18"><output class="slider-val num" id="ea-bf-val">18%</output></div>
+          <label class="label">每日总能量摄入（kcal）</label>
+          <div class="slider-row"><input type="range" class="slider" id="ea-ei" min="1000" max="5000" step="50" value="2400"><output class="slider-val num" id="ea-ei-val">2400</output></div>
+          <label class="label">每日运动消耗 EEE（kcal） · 训练+专项估算</label>
+          <div class="slider-row"><input type="range" class="slider" id="ea-eee" min="0" max="2000" step="25" value="500"><output class="slider-val num" id="ea-eee-val">500</output></div>
+        </div>
+        <div class="card tone-d">
+          <div class="panel-title">能量可用性判读</div>
+          <div class="stat mt-16"><div class="as-score num" id="ea-val">—</div><div class="stat-label">kcal / kg FFM / d</div></div>
+          <div class="mt-16"><span class="as-risk risk-low" id="ea-badge">—</span></div>
+          <div id="ea-recs"></div>
+          <div class="notice mt-16"><b>证据锚点</b> · IOC RED-S 共识（Mountjoy 2018 BJSM）：EA &lt;30 kcal/kg FFM/d 与内分泌、骨健康、免疫及表现损害相关；30–45 为次优区间；≥45 通常满足训练适应需求。教学估算，精确评估请结合体成分实测与饮食记录。</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="danger-zone mt-32 reveal"><b>重要免责</b> · 本系统所有评估结果均为基于公开文献规则的教学演示，不能替代执业医师、物理治疗师或持证康复专业人员的临床判断。出现红旗症状请立即停止运动并就医。</div>
+  </div></section>
+</main>
+<footer class="site-footer">
+  <div class="footer-grid">
+    <div class="footer-col footer-brand">
+      <div class="footer-title">SPORTSCI RESEARCH INSTITUTE</div>
+      <p>运动科学全域智能科研平台 · 文献证据可视化与科研辅助系统</p>
+      <p class="footer-meta">本科生独立搭建 · 学术非营利项目</p>
+    </div>
+    <div class="footer-col">
+      <div class="footer-h">免责声明</div>
+      <p>本平台全部内容仅用于学术研究与教育目的，不构成医疗建议、诊断或治疗方案。运动处方与康复训练须在执业医师或持证康复专业人员指导下进行。运动中若出现胸痛、胸闷、心悸、晕厥等症状，请立即停止运动并及时就医。</p>
+    </div>
+    <div class="footer-col">
+      <div class="footer-h">评估声明</div>
+      <p>风险评估基于公开循证文献构建的规则引擎，输出为概率性提示而非个体诊断。任何损伤疑问请咨询医疗专业人员。</p>
+    </div>
+    <div class="footer-col">
+      <div class="footer-h">版权声明</div>
+      <p>© 2026 Xuran Zhou. 本站原创内容采用 <a href="https://creativecommons.org/licenses/by-nc/4.0/deed.zh" target="_blank" rel="noopener">CC BY-NC 4.0</a> 协议共享，仅限非商业使用并须署名。图表与模型均为平台自绘。Three.js 与 Apache ECharts 遵循其各自开源许可。</p>
+    </div>
+  </div>
+  <div class="footer-bottom">SPORTSCI RESEARCH INSTITUTE · DESIGNED &amp; BUILT BY XURAN ZHOU · 2026</div>
+</footer>
+</div>
+<script src="vendor/three.min.js"></script>
+<script src="vendor/echarts.min.js"></script>
+<script src="assets/js/bg.js"></script>
+<script src="assets/js/charts.js"></script>
+<script src="assets/js/assessment.js"></script>
+<script src="assets/js/cursor.js"></script>
+<script>SPORTSCI_BG.init("bg-canvas"); SPORTSCI_CURSOR.init();</script>
+</body>
+</html>

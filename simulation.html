@@ -1,0 +1,348 @@
+<!DOCTYPE html><html lang="zh-CN"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>生理可视化仿真 · SPORTSCI RESEARCH INSTITUTE</title>
+<meta name="description" content="心肺负荷动态模拟、胸廓形态力学仿真、骨骼肌肥大刺激模拟、运动疲劳累积模型、补剂药代动力学与能量平衡体成分推演：参数可拖、曲线实时生成。">
+<link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="%238fe8cd"/><stop offset="1" stop-color="%233f8a70"/></linearGradient></defs><polygon points="16,2.5 27.5,9 27.5,23 16,29.5 4.5,23 4.5,9" fill="rgba(255,79,227,0.07)" stroke="url(%23g)" stroke-width="1.6"/><polygon points="16,7 23.5,11.2 23.5,20.8 16,25 8.5,20.8 8.5,11.2" fill="none" stroke="url(%23g)" stroke-width="0.8" opacity="0.5"/><path d="M8,11 L14,21 M14,11 L8,21 M15,11 L23,11 L15,21 L23,21" fill="none" stroke="%23c9ae85" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><circle cx="25" cy="16" r="1.6" fill="%238fe8cd"/></svg>'>
+<link rel="stylesheet" href="assets/css/main.css">
+<style>
+/* 页面级样式，前缀 sim- */
+.sim-pane { display: none; }
+.sim-pane.active { display: block; }
+.sim-ctl .slider-row { margin-bottom: 18px; }
+.sim-ctl .label { margin-bottom: 6px; }
+.u-hidden { display: none !important; }
+.sim-stat-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px 22px; }
+.sim-stat-grid .stat-num { font-size: clamp(24px, 2.4vw, 32px); }
+.sim-canvas-wrap { height: 420px; padding: 8px; overflow: hidden; }
+.sim-canvas-wrap canvas { width: 100%; height: 100%; display: block; cursor: grab; }
+.sim-canvas-wrap canvas:active { cursor: grabbing; }
+.sim-refs { display: block; margin-top: 8px; font-size: 11.5px; color: var(--ink-faint); }
+.sim-sub-h { font-size: 12px; letter-spacing: 0.14em; color: var(--ink-faint); margin: 4px 0 12px; text-transform: uppercase; }
+@media (max-width: 720px) { .sim-stat-grid { grid-template-columns: 1fr 1fr; } }
+</style>
+</head><body>
+<canvas id="bg-canvas"></canvas>
+<header class="nav">
+  <a class="nav-brand" href="index.html">
+    <svg class="nav-logo" viewBox="0 0 32 32" aria-hidden="true"><defs><linearGradient id="nlg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff9df2"/><stop offset="1" stop-color="#b026c9"/></linearGradient></defs><polygon points="16,2.5 27.5,9 27.5,23 16,29.5 4.5,23 4.5,9" fill="rgba(255,79,227,0.06)" stroke="url(#nlg)" stroke-width="1.5"/><polygon points="16,7 23.5,11.2 23.5,20.8 16,25 8.5,20.8 8.5,11.2" fill="none" stroke="#b026c9" stroke-width="0.7" opacity="0.55"/><path d="M8,11 L14,21 M14,11 L8,21 M15,11 L23,11 L15,21 L23,21" fill="none" stroke="#ffb54d" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="24.5" cy="23" r="1.3" fill="#ff9df2"/></svg>
+    <span class="nav-title">SPORTSCI RESEARCH <em>INSTITUTE</em></span>
+  </a>
+  <nav class="nav-links">
+    <a href="index.html">首页</a>
+    <a href="database.html">证据数据库</a>
+    <a href="simulation.html" class="active">生理仿真</a>
+    <a href="assessment.html">智能评估</a>
+    <a href="tools.html">科研工具</a>
+    <a href="supplements.html">补剂中心</a>
+    <a href="anatomy.html">人体图谱</a>
+    <a href="medicine.html">运动医学</a>
+    <a href="plan.html">训练计划</a>
+    <a href="about.html">关于</a>
+  </nav>
+</header>
+<div class="page">
+<main>
+  <section class="section"><div class="container">
+    <div class="kicker">MODULE 02 · PHYSIOLOGICAL SIMULATION</div>
+    <h1 class="h1">人体运动生理可视化仿真系统</h1>
+    <p class="lead mt-16">拖动参数，观察心肺动力学、胸廓呼吸力学、肌肥大剂量-反应、疲劳-适应双系统、补剂药代动力学与能量平衡的实时响应。所有模型基于公开经典文献简化实现，用于教学与科研假设推演。</p>
+    <div class="tabbar mt-32" id="sim-tabs">
+      <button class="tab active" data-sim="cardio">心肺负荷动态模拟</button>
+      <button class="tab" data-sim="thorax">胸廓形态力学仿真</button>
+      <button class="tab" data-sim="muscle">骨骼肌肥大刺激模拟</button>
+      <button class="tab" data-sim="fatigue">运动疲劳累积模型</button>
+      <button class="tab" data-sim="pk">补剂药代动力学</button>
+      <button class="tab" data-sim="energy">能量平衡与体成分</button>
+    </div>
+
+    <!-- ========== 面板1 心肺负荷动态模拟 ========== -->
+    <div class="sim-pane active" id="sim-cardio">
+      <div class="grid-2">
+        <div class="card sim-ctl tone-a reveal">
+          <div class="panel-title">参数控制</div>
+          <div class="panel-sub mb-16">一阶心率动力学 · Banister TRIMP 简化式</div>
+          <label class="label">年龄（岁） · HRmax = 220 − 年龄 = <span class="num" id="cardio-hrmax-view">198</span> 次/分</label>
+          <div class="slider-row"><input type="range" class="slider" id="cardio-age" min="16" max="60" step="1" value="22"><output class="slider-val num" id="cardio-age-val">22 岁</output></div>
+          <label class="label">静息心率（次/分）</label>
+          <div class="slider-row"><input type="range" class="slider" id="cardio-hrrest" min="40" max="80" step="1" value="60"><output class="slider-val num" id="cardio-hrrest-val">60</output></div>
+          <label class="label">运动强度（%HRmax）</label>
+          <div class="slider-row"><input type="range" class="slider" id="cardio-intensity" min="50" max="100" step="1" value="78"><output class="slider-val num" id="cardio-intensity-val">78%</output></div>
+          <label class="label">训练模式</label>
+          <select class="select mb-16" id="cardio-mode">
+            <option value="cont" selected>持续匀速</option>
+            <option value="interval">间歇</option>
+          </select>
+          <div id="cardio-interval-block" class="u-hidden">
+            <div class="sim-sub-h">间歇参数</div>
+            <label class="label">工作时长（秒）</label>
+            <div class="slider-row"><input type="range" class="slider" id="cardio-work" min="30" max="600" step="10" value="240"><output class="slider-val num" id="cardio-work-val">240 s</output></div>
+            <label class="label">恢复时长（秒）</label>
+            <div class="slider-row"><input type="range" class="slider" id="cardio-rec" min="30" max="300" step="10" value="120"><output class="slider-val num" id="cardio-rec-val">120 s</output></div>
+            <label class="label">组数</label>
+            <div class="slider-row"><input type="range" class="slider" id="cardio-sets" min="1" max="12" step="1" value="6"><output class="slider-val num" id="cardio-sets-val">6 组</output></div>
+          </div>
+          <label class="label">总时长（分钟）</label>
+          <div class="slider-row"><input type="range" class="slider" id="cardio-dur" min="10" max="60" step="1" value="30"><output class="slider-val num" id="cardio-dur-val">30 min</output></div>
+        </div>
+        <div>
+          <div class="card reveal" data-delay="1">
+            <div class="panel-title">心率-时间动力学曲线</div>
+            <div class="panel-sub">采样间隔 2 s · 背景分层为心率区间（%HRmax）</div>
+            <div class="chart-box mt-8" id="cardio-chart"></div>
+          </div>
+          <div class="card mt-16 reveal" data-delay="2">
+            <div class="panel-title">输出指标</div>
+            <div class="sim-stat-grid mt-16">
+              <div class="stat"><div class="stat-num num" id="cardio-stat-peak">—</div><div class="stat-label">峰值心率 · 次/分</div></div>
+              <div class="stat"><div class="stat-num num" id="cardio-stat-avg">—</div><div class="stat-label">平均心率 · 次/分</div></div>
+              <div class="stat"><div class="stat-num num" id="cardio-stat-trimp">—</div><div class="stat-label">TRIMP · AU</div></div>
+              <div class="stat"><div class="stat-num num" id="cardio-stat-zone" style="font-size:22px">—</div><div class="stat-label">主要训练区间</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="notice reveal" data-delay="3">
+        <b>模型说明</b> · 心率响应采用一阶动力学近似：HR(t) = HRrest + (HR_ss − HRrest)·(1 − e^(−t/τ))，持续 τ_on=30s；间歇工作段 τ_on=25s，恢复段 τ_off=45s 且恢复不完全（下限 HRrest + 0.35·ΔHR）。TRIMP 为 Banister 训练冲量简化式（男性系数）：Σ (Δt/60)·ΔHRratio·0.64·e^(1.92·ΔHRratio)。
+        <span class="sim-refs">参考：Banister et al. 1975 Aust J Sports Med；Halson 2014 Sports Med；Buchheit &amp; Laursen 2013 Sports Med。</span>
+      </div>
+    </div>
+
+    <!-- ========== 面板2 胸廓形态力学仿真 ========== -->
+    <div class="sim-pane" id="sim-thorax">
+      <div class="grid-2">
+        <div class="card sim-ctl tone-b reveal">
+          <div class="panel-title">参数控制</div>
+          <div class="panel-sub mb-16">泵柄 / 桶柄运动 · 膈肌-肋间肌协同</div>
+          <label class="label">呼吸频率（次/分）</label>
+          <div class="slider-row"><input type="range" class="slider" id="thorax-rr" min="6" max="30" step="1" value="12"><output class="slider-val num" id="thorax-rr-val">12</output></div>
+          <label class="label">潮气量（ml）</label>
+          <div class="slider-row"><input type="range" class="slider" id="thorax-tv" min="300" max="1500" step="10" value="600"><output class="slider-val num" id="thorax-tv-val">600</output></div>
+          <label class="label">胸廓指数（前后径/横径）</label>
+          <div class="slider-row"><input type="range" class="slider" id="thorax-index" min="0.60" max="1.10" step="0.01" value="0.75"><output class="slider-val num" id="thorax-index-val">0.75</output></div>
+          <div id="thorax-index-hint" class="warn u-hidden" style="margin:4px 0 14px;padding:10px 14px;font-size:12.5px">胸廓指数 &gt; 0.9：提示桶状胸特征（常见于慢阻肺等人群的教学示意）。</div>
+          <label class="label">桶柄运动权重（下胸廓横向扩张）</label>
+          <div class="slider-row"><input type="range" class="slider" id="thorax-bucket" min="0" max="100" step="1" value="60"><output class="slider-val num" id="thorax-bucket-val">60%</output></div>
+          <label class="label">膈肌贡献占比</label>
+          <div class="slider-row"><input type="range" class="slider" id="thorax-diaphragm" min="40" max="90" step="1" value="70"><output class="slider-val num" id="thorax-diaphragm-val">70%</output></div>
+        </div>
+        <div>
+          <div class="glass sim-canvas-wrap reveal" data-delay="1"><canvas id="ribcage-canvas"></canvas></div>
+          <div class="card mt-16 reveal" data-delay="2">
+            <div class="panel-title">肺容积波形</div>
+            <div class="panel-sub">两个呼吸周期 · 面积图为潮气容积变化</div>
+            <div class="chart-box-sm mt-8" id="thorax-chart"></div>
+          </div>
+          <div class="card mt-16 reveal" data-delay="3">
+            <div class="panel-title">输出指标</div>
+            <div class="sim-stat-grid mt-16">
+              <div class="stat"><div class="stat-num num" id="thorax-stat-ve">—</div><div class="stat-label">分钟通气量 · L/min</div></div>
+              <div class="stat"><div class="stat-num num" id="thorax-stat-dia">—</div><div class="stat-label">膈肌位移估计 · cm</div></div>
+              <div class="stat"><div class="stat-num num" id="thorax-stat-split" style="font-size:20px">—</div><div class="stat-label">泵柄 / 桶柄贡献</div></div>
+              <div class="stat"><div class="stat-num num" id="thorax-stat-index" style="font-size:20px">—</div><div class="stat-label">胸廓指数判读</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="notice reveal">
+        <b>模型说明</b> · 泵柄（pump-handle，上胸廓前后径增大）与桶柄（bucket-handle，下胸廓横径增大）运动及膈肌-肋间肌协同为经典呼吸力学概念；吸气相占呼吸周期 40%，膈肌穹顶下移幅度按潮气量线性映射（约 1.8 cm / 600 ml）。胸廓指数为教学示意参数。
+        <span class="sim-refs">参考：Neumann 2017；Kendall et al. 2005；Kolář et al. 2009 Physiol Res；De Troyer &amp; Estenne 1984 J Appl Physiol。</span>
+      </div>
+    </div>
+
+    <!-- ========== 面板3 骨骼肌肥大刺激模拟 ========== -->
+    <div class="sim-pane" id="sim-muscle">
+      <div class="grid-2">
+        <div class="card sim-ctl tone-c reveal">
+          <div class="panel-title">参数控制</div>
+          <div class="panel-sub mb-16">剂量-反应分级 · 收益递减 12 周投影</div>
+          <label class="label">每肌群每周组数</label>
+          <div class="slider-row"><input type="range" class="slider" id="muscle-sets" min="2" max="30" step="1" value="12"><output class="slider-val num" id="muscle-sets-val">12 组</output></div>
+          <label class="label">平均负荷（%1RM）</label>
+          <div class="slider-row"><input type="range" class="slider" id="muscle-load" min="30" max="90" step="1" value="75"><output class="slider-val num" id="muscle-load-val">75%</output></div>
+          <label class="label">每周频率（次/周）</label>
+          <div class="slider-row"><input type="range" class="slider" id="muscle-freq" min="1" max="4" step="1" value="2"><output class="slider-val num" id="muscle-freq-val">2 次</output></div>
+          <label class="label">平均 RIR（距离力竭次数）</label>
+          <div class="slider-row"><input type="range" class="slider" id="muscle-rir" min="0" max="5" step="1" value="2"><output class="slider-val num" id="muscle-rir-val">2</output></div>
+          <label class="label">训练年限</label>
+          <select class="select" id="muscle-level">
+            <option value="novice" selected>新手（&lt;1 年）</option>
+            <option value="inter">进阶（1–3 年）</option>
+            <option value="adv">高阶（&gt;3 年）</option>
+          </select>
+        </div>
+        <div>
+          <div class="card reveal" data-delay="1">
+            <div class="panel-title">12 周肌横截面积增长投影</div>
+            <div class="panel-sub">当前参数 vs 参考最优参数（12 组 / 75% / 2 次 / RIR 2）</div>
+            <div class="chart-box mt-8" id="muscle-chart"></div>
+          </div>
+          <div class="card mt-16 reveal" data-delay="2">
+            <div class="panel-title">输出指标</div>
+            <div class="sim-stat-grid mt-16">
+              <div class="stat"><div class="stat-num num" id="muscle-stat-gain">—</div><div class="stat-label">12 周预计累积增长 · %</div></div>
+              <div class="stat"><div class="stat-num num" id="muscle-stat-vol" style="font-size:22px">—</div><div class="stat-label">周有效容量评级</div></div>
+            </div>
+            <p class="muted mt-16" style="font-size:13px" id="muscle-stat-tier">—</p>
+            <p class="muted" style="font-size:13px" id="muscle-stat-advice">—</p>
+          </div>
+        </div>
+      </div>
+      <div class="notice reveal" data-delay="3">
+        <b>模型说明</b> · 教学简化模型：周增量 = 基准 × 容量因子 × 负荷因子 × RIR 因子 × e^(−0.12·w)。实际肌肥大适应受营养（蛋白质约 1.6 g/kg/d）、睡眠、训练史与个体差异显著影响，输出仅用于剂量-反应关系的直观理解。
+        <span class="sim-refs">参考：Schoenfeld et al. 2017 J Sports Sci；Schoenfeld et al. 2016 Sports Med；Morton et al. 2018 Br J Sports Med；Lasevicius et al. 2022 J Strength Cond Res。</span>
+      </div>
+    </div>
+
+    <!-- ========== 面板4 运动疲劳累积模型 ========== -->
+    <div class="sim-pane" id="sim-fatigue">
+      <div class="grid-2">
+        <div class="card sim-ctl tone-d reveal">
+          <div class="panel-title">参数控制</div>
+          <div class="panel-sub mb-16">Banister 双系统 · 8 周负荷计划</div>
+          <div class="sim-sub-h">周训练负荷（TRIMP 总量 / 周）</div>
+          <div id="fatigue-weeks"></div>
+          <label class="label mt-8">CTL 时间常数 τ_c（天）</label>
+          <div class="slider-row"><input type="range" class="slider" id="fatigue-tauc" min="28" max="56" step="1" value="42"><output class="slider-val num" id="fatigue-tauc-val">42 d</output></div>
+          <label class="label">ATL 时间常数 τ_a（天）</label>
+          <div class="slider-row"><input type="range" class="slider" id="fatigue-taua" min="3" max="14" step="1" value="7"><output class="slider-val num" id="fatigue-taua-val">7 d</output></div>
+          <label class="check-row mt-8"><input type="checkbox" id="fatigue-taper"><span>追加 2 周减量期（负荷 = 第 8 周 × 60%、× 45%）</span></label>
+        </div>
+        <div>
+          <div class="card reveal" data-delay="1">
+            <div class="panel-title">CTL / ATL / TSB 逐日演化</div>
+            <div class="panel-sub">周负荷均匀摊至 7 天 · 起点 CTL = ATL = 200</div>
+            <div class="chart-box mt-8" id="fatigue-chart"></div>
+          </div>
+          <div class="card mt-16 reveal" data-delay="2">
+            <div class="panel-title">输出指标</div>
+            <div class="sim-stat-grid mt-16">
+              <div class="stat"><div class="stat-num num" id="fatigue-stat-ctl" style="font-size:24px">—</div><div class="stat-label">第 8 周末 CTL</div></div>
+              <div class="stat"><div class="stat-num num" id="fatigue-stat-atl" style="font-size:24px">—</div><div class="stat-label">第 8 周末 ATL</div></div>
+              <div class="stat"><div class="stat-num num" id="fatigue-stat-tsb" style="font-size:24px">—</div><div class="stat-label">第 8 周末 TSB</div></div>
+              <div class="stat"><div class="stat-num num" id="fatigue-stat-peak" style="font-size:24px">—</div><div class="stat-label">峰值 ATL 所在周</div></div>
+            </div>
+            <div id="fatigue-warn" class="warn u-hidden" style="font-size:12.5px"></div>
+            <p class="muted mt-8" style="font-size:13px" id="fatigue-stat-taper">—</p>
+          </div>
+        </div>
+      </div>
+      <div class="notice reveal" data-delay="3">
+        <b>模型说明</b> · fitness-fatigue 双系统冲量-反应模型教学实现：CTL_t = CTL_{t−1} + (load − CTL_{t−1})/τ_c，ATL 同理（τ_a），TSB = CTL − ATL。正 TSB 区间为理论「竞技状态窗口」。相邻两周负荷比 &gt; 1.5 视为骤增风险提示。
+        <span class="sim-refs">参考：Banister et al. 1975；Halson 2014 Sports Med；Gabbett 2016 Br J Sports Med；Soligard et al. 2016 (IOC 共识) Br J Sports Med。</span>
+      </div>
+    </div>
+
+    <!-- ========== 面板5 补剂药代动力学 ========== -->
+    <div class="sim-pane" id="sim-pk">
+      <div class="grid-2">
+        <div class="card sim-ctl tone-c reveal">
+          <div class="panel-title">参数控制</div>
+          <div class="panel-sub mb-16">咖啡因一房室模型 · 一级吸收/消除</div>
+          <label class="label">体重（kg）</label>
+          <div class="slider-row"><input type="range" class="slider" id="pk-bw" min="45" max="110" step="1" value="70"><output class="slider-val num" id="pk-bw-val">70 kg</output></div>
+          <label class="label">咖啡因剂量（mg/kg） · ISSN 有效区间 3–6</label>
+          <div class="slider-row"><input type="range" class="slider" id="pk-dose" min="1" max="9" step="0.5" value="3"><output class="slider-val num" id="pk-dose-val">3 mg/kg</output></div>
+          <label class="label">消除半衰期 t½（h） · 个体差 2–8 h</label>
+          <div class="slider-row"><input type="range" class="slider" id="pk-half" min="2" max="8" step="0.5" value="5"><output class="slider-val num" id="pk-half-val">5 h</output></div>
+          <label class="label">吸收速率常数 ka（/h） · 空腹快 / 饱腹慢</label>
+          <div class="slider-row"><input type="range" class="slider" id="pk-ka" min="0.5" max="3" step="0.1" value="1.5"><output class="slider-val num" id="pk-ka-val">1.5</output></div>
+          <div class="notice" style="font-size:12.5px;margin:8px 0 0">模型假设：口服生物利用度 F≈0.99，表观分布容积 Vd ≈ 0.6 L/kg，一房室开放模型 C(t) = (F·D/Vd)·ka/(ka−ke)·(e^(−ke·t) − e^(−ka·t))。</div>
+        </div>
+        <div>
+          <div class="card reveal" data-delay="1">
+            <div class="panel-title">血浆浓度-时间曲线</div>
+            <div class="panel-sub">12 小时窗口 · 竖线为 Tmax · 色带为常用参考区间</div>
+            <div class="chart-box mt-8" id="pk-chart"></div>
+          </div>
+          <div class="card mt-16 reveal" data-delay="2">
+            <div class="panel-title">输出指标</div>
+            <div class="sim-stat-grid mt-16">
+              <div class="stat"><div class="stat-num num" id="pk-stat-cmax">—</div><div class="stat-label">峰值浓度 Cmax · mg/L</div></div>
+              <div class="stat"><div class="stat-num num" id="pk-stat-tmax">—</div><div class="stat-label">达峰时间 Tmax · min</div></div>
+              <div class="stat"><div class="stat-num num" id="pk-stat-total">—</div><div class="stat-label">总剂量 · mg</div></div>
+              <div class="stat"><div class="stat-num num" id="pk-stat-resid">—</div><div class="stat-label">12 h 残余比例 · %</div></div>
+            </div>
+            <p class="muted mt-16" style="font-size:13px" id="pk-note">—</p>
+          </div>
+        </div>
+      </div>
+      <div class="notice reveal" data-delay="3">
+        <b>模型说明</b> · 教学化一房室药代模型。达峰时间受 ka 主导（约 30–90 min），消除由 t½ 主导；ISSN 建议运动前 30–60 min 摄入 3–6 mg/kg，剂量 &gt;9 mg/kg 不增效且心悸/焦虑等副作用增加。晚间摄入注意半衰期对睡眠的残余影响。
+        <span class="sim-refs">参考：Guest et al. 2021 J Int Soc Sports Nutr（ISSN 立场声明）；Wickham &amp; Spriet 2018 Sports Med。</span>
+      </div>
+    </div>
+
+    <!-- ========== 面板6 能量平衡与体成分 ========== -->
+    <div class="sim-pane" id="sim-energy">
+      <div class="grid-2">
+        <div class="card sim-ctl tone-d reveal">
+          <div class="panel-title">参数控制</div>
+          <div class="panel-sub mb-16">能量缺口 → 体重/脂肪/去脂体重投影</div>
+          <label class="label">初始体重（kg）</label>
+          <div class="slider-row"><input type="range" class="slider" id="en-bw" min="45" max="120" step="1" value="70"><output class="slider-val num" id="en-bw-val">70 kg</output></div>
+          <label class="label">初始体脂率（%）</label>
+          <div class="slider-row"><input type="range" class="slider" id="en-bf" min="8" max="40" step="0.5" value="18"><output class="slider-val num" id="en-bf-val">18%</output></div>
+          <label class="label">每日能量平衡（kcal） · 负值=缺口，正值=盈余</label>
+          <div class="slider-row"><input type="range" class="slider" id="en-def" min="-800" max="600" step="25" value="-400"><output class="slider-val num" id="en-def-val">−400</output></div>
+          <label class="label">蛋白质摄入（g/kg/d） · 高摄入保护去脂体重</label>
+          <div class="slider-row"><input type="range" class="slider" id="en-pro" min="0.8" max="2.4" step="0.1" value="1.6"><output class="slider-val num" id="en-pro-val">1.6</output></div>
+          <label class="label">是否结合抗阻训练（进一步保护去脂体重）</label>
+          <label class="check-row" style="padding:4px 0 12px"><input type="checkbox" id="en-rt" checked><span>每周 ≥2 次抗阻训练</span></label>
+        </div>
+        <div>
+          <div class="card reveal" data-delay="1">
+            <div class="panel-title">12 周体重与体成分投影</div>
+            <div class="panel-sub">教学简化：7700 kcal ≈ 1 kg 脂肪 · 去脂体重变化按缺口×蛋白×抗阻修正</div>
+            <div class="chart-box mt-8" id="en-chart"></div>
+          </div>
+          <div class="card mt-16 reveal" data-delay="2">
+            <div class="panel-title">输出指标</div>
+            <div class="sim-stat-grid mt-16">
+              <div class="stat"><div class="stat-num num" id="en-stat-bw">—</div><div class="stat-label">12 周体重变化 · kg</div></div>
+              <div class="stat"><div class="stat-num num" id="en-stat-fat">—</div><div class="stat-label">脂肪量变化 · kg</div></div>
+              <div class="stat"><div class="stat-num num" id="en-stat-ffm">—</div><div class="stat-label">去脂体重变化 · kg</div></div>
+              <div class="stat"><div class="stat-num num" id="en-stat-bf" style="font-size:24px">—</div><div class="stat-label">12 周体脂率 · %</div></div>
+            </div>
+            <div id="en-warn" class="warn u-hidden" style="font-size:12.5px"></div>
+          </div>
+        </div>
+      </div>
+      <div class="notice reveal" data-delay="3">
+        <b>模型说明</b> · 教学简化能量平衡模型：脂肪变化 ≈ 累计能量平衡 ÷ 7700 kcal/kg；去脂体重丢失比例随缺口增大而上升，随蛋白摄入与抗阻训练而下降。缺口过大（&gt;750 kcal/d）且恢复不足时可能进入低能量可用性风险区（IOC RED-S：EA&lt;30 kcal/kg FFM/d 损害内分泌、骨与免疫）。
+        <span class="sim-refs">参考：Morton et al. 2018 Br J Sports Med；Mountjoy et al. 2018 (IOC RED-S) Br J Sports Med；Gallagher et al. 2000 Am J Clin Nutr。</span>
+      </div>
+    </div>
+  </div></section>
+</main>
+<footer class="site-footer">
+  <div class="footer-grid">
+    <div class="footer-col footer-brand">
+      <div class="footer-title">SPORTSCI RESEARCH INSTITUTE</div>
+      <p>运动科学全域智能科研平台 · 文献证据可视化与科研辅助系统</p>
+      <p class="footer-meta">本科生独立搭建 · 学术非营利项目</p>
+    </div>
+    <div class="footer-col">
+      <div class="footer-h">免责声明</div>
+      <p>本平台全部内容仅用于学术研究与教育目的，不构成医疗建议、诊断或治疗方案。运动处方与康复训练须在执业医师或持证康复专业人员指导下进行。运动中若出现胸痛、胸闷、心悸、晕厥等症状，请立即停止运动并及时就医。</p>
+    </div>
+    <div class="footer-col">
+      <div class="footer-h">模型声明</div>
+      <p>全部仿真为经典生理模型的教学化简化实现，参数与输出仅供学习推演，不构成个体化训练处方。真实人群应用需结合心肺运动试验等实测数据。</p>
+    </div>
+    <div class="footer-col">
+      <div class="footer-h">版权声明</div>
+      <p>© 2026 Xuran Zhou. 本站原创内容采用 <a href="https://creativecommons.org/licenses/by-nc/4.0/deed.zh" target="_blank" rel="noopener">CC BY-NC 4.0</a> 协议共享，仅限非商业使用并须署名。图表与模型均为平台自绘。Three.js 与 Apache ECharts 遵循其各自开源许可。</p>
+    </div>
+  </div>
+  <div class="footer-bottom">SPORTSCI RESEARCH INSTITUTE · DESIGNED &amp; BUILT BY XURAN ZHOU · 2026</div>
+</footer>
+</div>
+<script src="vendor/three.min.js"></script>
+<script src="vendor/echarts.min.js"></script>
+<script src="assets/js/bg.js"></script>
+<script src="assets/js/charts.js"></script>
+<script src="assets/js/ribcage.js"></script>
+<script src="assets/js/simulation.js"></script>
+<script src="assets/js/cursor.js"></script>
+<script>SPORTSCI_BG.init("bg-canvas"); SPORTSCI_CURSOR.init();</script>
+</body></html>

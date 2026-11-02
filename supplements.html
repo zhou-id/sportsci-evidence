@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>运动补剂循证中心 · SPORTSCI RESEARCH INSTITUTE</title>
+<meta name="description" content="以 ISSN 立场声明、IOC 共识与 WADA 禁用清单为框架的运动补剂循证中心：80 种增效补剂的剂量、时机、机制与证据分级，含个体化剂量计算器与赛前赛中赛后时机规划。">
+<link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="%238fe8cd"/><stop offset="1" stop-color="%233f8a70"/></linearGradient></defs><polygon points="16,2.5 27.5,9 27.5,23 16,29.5 4.5,23 4.5,9" fill="rgba(255,79,227,0.07)" stroke="url(%23g)" stroke-width="1.6"/><polygon points="16,7 23.5,11.2 23.5,20.8 16,25 8.5,20.8 8.5,11.2" fill="none" stroke="url(%23g)" stroke-width="0.8" opacity="0.5"/><path d="M8,11 L14,21 M14,11 L8,21 M15,11 L23,11 L15,21 L23,21" fill="none" stroke="%23c9ae85" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><circle cx="25" cy="16" r="1.6" fill="%238fe8cd"/></svg>'>
+<link rel="stylesheet" href="assets/css/main.css">
+<style>
+  .sp-pane { display: none; }
+  .sp-pane.active { display: block; }
+  .sp-dose-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+  .sp-dose-item { padding: 18px 20px; }
+  .sp-dose-item .dl { font-size: 11px; letter-spacing: 0.16em; color: var(--ink-faint); text-transform: uppercase; }
+  .sp-dose-item .dv { font-size: 24px; font-weight: 700; color: var(--accent); margin-top: 6px; font-variant-numeric: tabular-nums; }
+  .sp-dose-item .dn { font-size: 12px; color: var(--ink-dim); margin-top: 6px; line-height: 1.6; }
+  .sp-tl { position: relative; padding-left: 26px; }
+  .sp-tl::before { content: ""; position: absolute; left: 6px; top: 4px; bottom: 4px; width: 1px; background: linear-gradient(180deg, var(--accent), rgba(61,232,255,0.35)); }
+  .sp-tl-item { position: relative; padding: 0 0 26px 0; }
+  .sp-tl-item::before { content: ""; position: absolute; left: -24px; top: 8px; width: 7px; height: 7px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 12px rgba(255,79,227,0.7); }
+  .sp-tl-time { font-size: 11px; letter-spacing: 0.18em; color: var(--accent-dim); font-weight: 600; }
+  .sp-tl-title { font-size: 15px; color: #f5e4ff; font-weight: 600; margin-top: 2px; }
+  .sp-tl-body { font-size: 13px; color: var(--ink-dim); margin-top: 6px; line-height: 1.7; }
+  .sp-grade-card { display: flex; flex-direction: column; }
+  .sp-grade-card ul { list-style: none; margin-top: 12px; }
+  .sp-grade-card li { font-size: 13px; color: var(--ink-dim); padding: 6px 0; border-bottom: 1px dashed rgba(200,120,255,0.08); }
+  .sp-grade-card li:last-child { border-bottom: none; }
+  .sp-chip-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 16px; }
+  @media (max-width: 900px) {
+    .sp-dose-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<canvas id="bg-canvas"></canvas>
+<header class="nav">
+  <a class="nav-brand" href="index.html">
+    <svg class="nav-logo" viewBox="0 0 32 32" aria-hidden="true"><defs><linearGradient id="nlg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff9df2"/><stop offset="1" stop-color="#b026c9"/></linearGradient></defs><polygon points="16,2.5 27.5,9 27.5,23 16,29.5 4.5,23 4.5,9" fill="rgba(255,79,227,0.06)" stroke="url(#nlg)" stroke-width="1.5"/><polygon points="16,7 23.5,11.2 23.5,20.8 16,25 8.5,20.8 8.5,11.2" fill="none" stroke="#b026c9" stroke-width="0.7" opacity="0.55"/><path d="M8,11 L14,21 M14,11 L8,21 M15,11 L23,11 L15,21 L23,21" fill="none" stroke="#ffb54d" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="24.5" cy="23" r="1.3" fill="#ff9df2"/></svg>
+    <span class="nav-title">SPORTSCI RESEARCH <em>INSTITUTE</em></span>
+  </a>
+  <nav class="nav-links">
+    <a href="index.html">首页</a>
+    <a href="database.html">证据数据库</a>
+    <a href="simulation.html">生理仿真</a>
+    <a href="assessment.html">智能评估</a>
+    <a href="tools.html">科研工具</a>
+    <a href="supplements.html" class="active">补剂中心</a>
+    <a href="anatomy.html">人体图谱</a>
+    <a href="medicine.html">运动医学</a>
+    <a href="plan.html">训练计划</a>
+    <a href="about.html">关于</a>
+  </nav>
+</header>
+
+<div class="page">
+<main>
+  <section class="section"><div class="container">
+    <div class="kicker">MODULE 05 · ERGOGENIC AID CENTER</div>
+    <h1 class="h1">运动补剂循证中心</h1>
+    <p class="lead mt-16">以 ISSN 立场声明、IOC 补剂共识与 WADA 禁用清单为框架的补剂证据中心。覆盖 80 种常见增效补剂的机制、有效剂量、服用时机与证据分级，并提供基于体重的个体化剂量计算与赛前—赛中—赛后时机规划。所有条目为教学性摘编，不构成使用建议。</p>
+
+    <div class="grid-4 mt-32">
+      <div class="stat reveal"><div class="stat-num" id="sp-count">80</div><div class="stat-label">补剂条目</div></div>
+      <div class="stat reveal" data-delay="1"><div class="stat-num" id="sp-a">11</div><div class="stat-label">A 级证据</div></div>
+      <div class="stat reveal" data-delay="2"><div class="stat-num">11</div><div class="stat-label">WADA 禁用类别</div></div>
+      <div class="stat reveal" data-delay="3"><div class="stat-num">6</div><div class="stat-label">国际立场文件</div></div>
+    </div>
+
+    <div class="tabbar mt-32" id="sp-tabs">
+      <button class="tab active" data-pane="list">补剂证据总览</button>
+      <button class="tab" data-pane="dose">个体化剂量计算</button>
+      <button class="tab" data-pane="timing">时机规划</button>
+      <button class="tab" data-pane="grade">分级矩阵</button>
+      <button class="tab" data-pane="banned">禁用与污染</button>
+    </div>
+
+    <!-- 总览 -->
+    <div class="sp-pane active" id="sp-list">
+      <div class="glass" style="padding:16px 18px">
+        <div class="flex flex-wrap">
+          <span class="tiny">按证据等级筛选：</span>
+          <div id="sp-chips" class="flex flex-wrap" style="gap:6px"></div>
+          <span class="tiny" style="margin-left:auto">命中 <b id="sp-hit">0</b> / <span id="sp-total">0</span> 条</span>
+        </div>
+      </div>
+      <div class="table-wrap mt-16">
+        <table class="table">
+          <thead><tr><th>补剂</th><th>主要机制</th><th>有效剂量</th><th>证据</th></tr></thead>
+          <tbody id="sp-body"></tbody>
+        </table>
+      </div>
+      <div class="notice mt-16"><b>读表说明</b> · 「有效剂量」指在对照试验中产生可测增效的常用区间，而非推荐摄入量。剂量上限与个体耐受差异需结合体重、训练水平与健康状况判断；肾功能异常、心血管疾病、妊娠期人群补充前须咨询医师。</div>
+    </div>
+
+    <!-- 剂量计算 -->
+    <div class="sp-pane" id="sp-dose">
+      <div class="grid-2">
+        <div class="card tone-a">
+          <div class="panel-title">参数输入</div>
+          <div class="panel-sub mb-16">按体重与训练类型给出常用循证剂量区间</div>
+          <label class="label">体重（kg） · <span class="num" id="sp-bw-view">70</span> kg</label>
+          <div class="slider-row mb-16"><input type="range" class="slider" id="sp-bw" min="45" max="110" step="1" value="70"><output class="slider-val num" id="sp-bw-val">70 kg</output></div>
+          <label class="label">训练类型</label>
+          <select class="select mb-16" id="sp-sport">
+            <option value="strength" selected>力量 / 增肌</option>
+            <option value="endurance">耐力（&gt;60 min）</option>
+            <option value="interval">高强度间歇 / 团队项目</option>
+            <option value="fatloss">减脂 / 能量缺口期</option>
+          </select>
+          <label class="label">咖啡因敏感度</label>
+          <select class="select mb-16" id="sp-caff">
+            <option value="low">低（常用 3 mg/kg）</option>
+            <option value="mid" selected>中（常用 4.5 mg/kg）</option>
+            <option value="high">高（从 2 mg/kg 起始）</option>
+          </select>
+          <div class="warn" style="margin-bottom:0"><b>使用边界</b> · 计算结果为教学剂量区间，不替代运动营养师或医师的个体化方案；首次使用任何补剂建议从低剂量起试并用记事本记录反应。</div>
+        </div>
+        <div>
+          <div class="sp-dose-grid" id="sp-out"></div>
+          <div class="card tone-b mt-16" style="padding:18px 20px">
+            <div class="panel-title" style="font-size:14px">当日总量速览</div>
+            <div class="panel-sub mt-8" id="sp-sum"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 时机 -->
+    <div class="sp-pane" id="sp-timing">
+      <div class="grid-2">
+        <div class="card tone-b">
+          <div class="panel-title">比赛 / 训练日时机轴</div>
+          <div class="panel-sub mb-24">以「吸收—峰值—清除」为线索排列，具体时间随剂型与个体差异调整</div>
+          <div class="sp-tl">
+            <div class="sp-tl-item">
+              <div class="sp-tl-time">T − 3 h</div>
+              <div class="sp-tl-title">硝酸盐 · 赛前主餐</div>
+              <div class="sp-tl-body">甜菜根浓缩汁 6–8 mmol NO₃⁻，配合含碳水正餐；避免同期使用抗菌漱口水，以免口腔硝酸盐还原菌被清除。</div>
+            </div>
+            <div class="sp-tl-item">
+              <div class="sp-tl-time">T − 1.5 h</div>
+              <div class="sp-tl-title">碳酸氢钠（可选）</div>
+              <div class="sp-tl-body">0.2–0.4 g/kg，分 2–3 次随小量碳水服用以减轻胃肠不适；仅用于 1–7 min 高强度项目。</div>
+            </div>
+            <div class="sp-tl-item">
+              <div class="sp-tl-time">T − 60 min</div>
+              <div class="sp-tl-title">咖啡因</div>
+              <div class="sp-tl-body">3–6 mg/kg（片剂/胶囊/咖啡）；避免赛前 8 h 内追加咖啡因影响睡眠，长期使用者建议赛前 1–2 周规律减量。</div>
+            </div>
+            <div class="sp-tl-item">
+              <div class="sp-tl-time">T − 30 ~ 0 min</div>
+              <div class="sp-tl-title">赛中碳水与补液启动</div>
+              <div class="sp-tl-body">持续 &gt;60 min 项目按 30–90 g/h 碳水（葡萄糖+果糖多转运），钠 300–700 mg/L；热环境提高补液比例。</div>
+            </div>
+            <div class="sp-tl-item">
+              <div class="sp-tl-time">T + 0 ~ 2 h</div>
+              <div class="sp-tl-title">赛后恢复窗口</div>
+              <div class="sp-tl-body">蛋白 0.3 g/kg + 碳水 1.0–1.2 g/kg；肌酸 3–5 g 随餐补充以提升留存。24 h 内总蛋白与总能量比单次时机更关键。</div>
+            </div>
+            <div class="sp-tl-item" style="padding-bottom:0">
+              <div class="sp-tl-time">每日 / 睡前</div>
+              <div class="sp-tl-title">长期补充节奏</div>
+              <div class="sp-tl-body">β-丙氨酸 3.2–6.4 g/d 分次，持续 ≥4 周；维生素 D 依据 25(OH)D 水平；睡前酪蛋白 30–40 g 支持夜间蛋白合成。</div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="card tone-c">
+            <div class="panel-title">时机原则</div>
+            <ul class="sub-list mt-16">
+              <li>总量优先于时机：蛋白、肌酸、β-丙氨酸的长期总量决定适应幅度</li>
+              <li>急性增效补剂（咖啡因、硝酸盐、碳酸氢钠）才是「时机敏感型」</li>
+              <li>胃肠耐受决定实际可执行性：分次、随餐、低渗浓度更易坚持</li>
+              <li>避免堆叠未知交互：一次只新增一种，观察 2–4 周再决定保留</li>
+              <li>赛前不试新：所有补剂策略须在训练日完成至少 2–3 次演练</li>
+              <li>睡眠与总能量充足时，补剂的边际收益才会显现</li>
+            </ul>
+          </div>
+          <div class="card tone-d mt-16">
+            <div class="panel-title">证据强度分层</div>
+            <div class="panel-sub mt-8">A 级：多项 RCT/Meta 支持增效且安全性可接受；B 级：有前景但证据不一致或情境特异；C 级：证据不足，仅作了解。补剂永远排在训练、营养、睡眠、恢复之后。</div>
+            <div class="sp-chip-row">
+              <span class="chip method-chip">ISSN 立场声明</span>
+              <span class="chip method-chip">IOC 共识</span>
+              <span class="chip method-chip">AIS 分类</span>
+              <span class="chip method-chip">WADA 2026</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 分级矩阵 -->
+    <div class="sp-pane" id="sp-grade">
+      <div class="grid-3" id="sp-grade-grid"></div>
+      <div class="notice mt-24"><b>分级方法</b> · 本页参考 ISSN 立场声明与 AIS 补剂分类框架做教学化映射：以「是否有 ≥2 项高质量 RCT 或 Meta 分析支持运动表现结局」为主判据，同时标注安全性证据与污染风险。分级不随商业宣传调整。</div>
+    </div>
+
+    <!-- 禁用 -->
+    <div class="sp-pane" id="sp-banned">
+      <div class="grid-2">
+        <div class="table-wrap">
+          <table class="table">
+            <thead><tr><th>WADA 类别</th><th>代表物质</th><th>运动场景风险</th></tr></thead>
+            <tbody>
+              <tr><td><span class="t-title">S0 非许可物质</span></td><td>未获批药物、部分研究性肽</td><td>无临床安全数据，检测即阳性</td></tr>
+              <tr><td><span class="t-title">S1 合成代谢剂</span></td><td>睾酮、诺龙、司坦唑醇、SARMs</td><td>肌肉增长但抑制内源激素轴</td></tr>
+              <tr><td><span class="t-title">S2 肽类激素</span></td><td>EPO、hGH、IGF-1、肉碱?（非）</td><td>氧运输与组织修复滥用</td></tr>
+              <tr><td><span class="t-title">S3 β₂ 激动剂</span></td><td>沙丁胺醇（超阈值）、克伦特罗</td><td>哮喘治疗需按阈值与 TUE 规范</td></tr>
+              <tr><td><span class="t-title">S4 激素与代谢调节剂</span></td><td>他莫昔芬、芳香化酶抑制剂</td><td>掩盖类固醇使用的典型手段</td></tr>
+              <tr><td><span class="t-title">S5 利尿剂与掩蔽剂</span></td><td>呋塞米、氢氯噻嗪、丙磺舒</td><td>快速减重与稀释尿液，脱水风险</td></tr>
+              <tr><td><span class="t-title">S6 兴奋剂</span></td><td>安非他明、可卡因、甲基麻黄碱</td><td>赛内禁用，心血管事件风险</td></tr>
+              <tr><td><span class="t-title">S7 麻醉剂</span></td><td>吗啡、芬太尼、曲马多</td><td>赛内禁用，掩盖损伤疼痛</td></tr>
+              <tr><td><span class="t-title">S8 大麻素类</span></td><td>THC 及其代谢物</td><td>赛内禁用，影响反应与协调</td></tr>
+              <tr><td><span class="t-title">S9 糖皮质激素</span></td><td>泼尼松、地塞米松（口服/注射）</td><td>赛内口服/注射禁用，局部外用受限</td></tr>
+              <tr><td><span class="t-title">P1 β-阻断剂</span></td><td>普萘洛尔、美托洛尔</td><td>射击、射箭等特定项目禁用</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div>
+          <div class="card tone-d">
+            <div class="panel-title">污染风险与第三方检测</div>
+            <div class="panel-sub mt-8">补剂污染是竞技运动员最常见的非故意阳性来源。IOC 共识建议优先选择经过批次级第三方检测的产品：</div>
+            <ul class="sub-list mt-16">
+              <li>Informed Sport（LGC）批次认证</li>
+              <li>NSF Certified for Sport</li>
+              <li>BSCG Certified Drug Free</li>
+              <li>科隆清单（Kölner Liste）</li>
+            </ul>
+            <p class="tiny mt-16">认证降低但不消除风险；「天然」「植物提取」不等于无禁用成分，部分减肥与「促睾」类产品是阳性高发品类。</p>
+          </div>
+          <div class="danger-zone mt-16"><b>竞技与健康双重风险</b> · 使用禁用物质可能导致停赛、终身禁赛与法律后果；非竞技人群使用黑市类固醇亦与肝毒性、心肌病、内分泌紊乱相关。本平台不提供任何获取或使用指导。</div>
+          <div class="card tone-b mt-16" style="padding:18px 20px">
+            <div class="panel-title" style="font-size:14px">查询路径</div>
+            <div class="panel-sub mt-8">治疗用药豁免（TUE）须通过所属国家反兴奋剂机构与国际联合会申请；药物成分不确定时，先在国家反兴奋剂机构官网核对禁用清单与阈值。</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="danger-zone mt-32 reveal"><b>免责声明</b> · 本页全部内容仅用于运动科学教学与循证方法学演示，不构成医疗建议、用药建议或补剂推荐。补剂可能与你正在服用的药物发生交互；妊娠期、哺乳期、未成年人、肝肾功能异常及心血管疾病人群使用前必须咨询执业医师。</div>
+  </div></section>
+</main>
+
+<footer class="site-footer">
+  <div class="footer-grid">
+    <div class="footer-col footer-brand">
+      <div class="footer-title">SPORTSCI RESEARCH INSTITUTE</div>
+      <p>运动科学全域智能科研平台 · 文献证据可视化与科研辅助系统</p>
+      <p class="footer-meta">本科生独立搭建 · 学术非营利项目</p>
+    </div>
+    <div class="footer-col">
+      <div class="footer-h">免责声明</div>
+      <p>本平台全部内容仅用于学术研究与教育目的，不构成医疗建议、诊断或治疗方案。运动处方与康复训练须在执业医师或持证康复专业人员指导下进行。运动中若出现胸痛、胸闷、心悸、晕厥等症状，请立即停止运动并及时就医。</p>
+    </div>
+    <div class="footer-col">
+      <div class="footer-h">数据与引用</div>
+      <p>数据库文献信息版权归原作者及出版机构所有，条目摘编为学习性转述，结论以原始出版物为准。平台示例分析数据仅用于功能演示，不构成对任何真实个体的评估。</p>
+    </div>
+    <div class="footer-col">
+      <div class="footer-h">版权声明</div>
+      <p>© 2026 Xuran Zhou. 本站原创内容采用 <a href="https://creativecommons.org/licenses/by-nc/4.0/deed.zh" target="_blank" rel="noopener">CC BY-NC 4.0</a> 协议共享，仅限非商业使用并须署名。图表与模型均为平台自绘。Three.js 与 Apache ECharts 遵循其各自开源许可。</p>
+    </div>
+  </div>
+  <div class="footer-bottom">SPORTSCI RESEARCH INSTITUTE · DESIGNED &amp; BUILT BY XURAN ZHOU · 2026</div>
+</footer>
+</div>
+<script src="vendor/three.min.js"></script>
+<script src="assets/js/bg.js"></script>
+<script src="assets/js/cursor.js"></script>
+<script src="assets/js/supplements.js"></script>
+<script>SPORTSCI_BG.init("bg-canvas"); SPORTSCI_CURSOR.init(); SPORTSCI_SUPPLEMENTS.init();</script>
+</body>
+</html>

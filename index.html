@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SPORTSCI RESEARCH INSTITUTE · 运动科学全域智能科研平台</title>
+<meta name="description" content="国内首个由本科生搭建的运动人体科学全领域文献证据可视化与智能科研辅助系统：证据数据库、生理仿真、损伤评估、科研工具。">
+<link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="%238fe8cd"/><stop offset="1" stop-color="%233f8a70"/></linearGradient></defs><polygon points="16,2.5 27.5,9 27.5,23 16,29.5 4.5,23 4.5,9" fill="rgba(255,79,227,0.07)" stroke="url(%23g)" stroke-width="1.6"/><polygon points="16,7 23.5,11.2 23.5,20.8 16,25 8.5,20.8 8.5,11.2" fill="none" stroke="url(%23g)" stroke-width="0.8" opacity="0.5"/><path d="M8,11 L14,21 M14,11 L8,21 M15,11 L23,11 L15,21 L23,21" fill="none" stroke="%23c9ae85" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><circle cx="25" cy="16" r="1.6" fill="%238fe8cd"/></svg>'>
+<link rel="stylesheet" href="assets/css/main.css">
+<style>
+  .hero { min-height: 92vh; display: flex; align-items: center; padding-top: var(--nav-h); }
+  .hero-grid { display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 40px; align-items: center; width: 100%; }
+  .hero-canvas-wrap { position: relative; height: 560px; }
+  .hero-halo {
+    position: absolute; inset: 8% 6%;
+    background: radial-gradient(ellipse at center, rgba(255,79,227,0.10), transparent 62%);
+    pointer-events: none;
+  }
+  #hero-canvas { width: 100%; height: 100%; display: block; position: relative; }
+  .hero-cta { display: flex; gap: 14px; margin-top: 34px; flex-wrap: wrap; }
+  .hero-stats { display: grid; grid-template-columns: repeat(4, auto); gap: 36px; margin-top: 52px; }
+  .float-card {
+    position: absolute; padding: 14px 16px; width: 218px;
+    font-size: 11px; letter-spacing: 0.04em;
+  }
+  .float-card .fc-title { font-size: 10px; letter-spacing: 0.22em; color: var(--ink-faint); margin-bottom: 8px; text-transform: uppercase; }
+  .fc-forest { left: -10px; bottom: 40px; transform: perspective(800px) rotateY(9deg) rotateX(2deg); }
+  .fc-wave { right: -6px; top: 56px; transform: perspective(800px) rotateY(-8deg); width: 190px; }
+  .track-icon { width: 34px; height: 34px; margin-bottom: 14px; }
+  .sub-list { list-style: none; margin-top: 14px; }
+  .sub-list li {
+    font-size: 12.5px; color: var(--ink-dim); padding: 5px 0 5px 16px;
+    border-bottom: 1px dashed rgba(200,120,255,0.08); position: relative;
+  }
+  .sub-list li::before { content: ""; position: absolute; left: 0; top: 13px; width: 6px; height: 1px; background: var(--accent-dim); }
+  .mod-card { display: flex; flex-direction: column; }
+  .mod-num { font-size: 11px; letter-spacing: 0.3em; color: var(--accent-dim); margin-bottom: 12px; }
+  .mod-go { margin-top: auto; padding-top: 18px; font-size: 12px; letter-spacing: 0.14em; color: var(--accent); display: inline-flex; align-items: center; gap: 8px; }
+  .mod-go svg { transition: transform 0.35s ease; }
+  .mod-card:hover .mod-go svg { transform: translateX(5px); }
+  a.mod-link { text-decoration: none; color: inherit; }
+  .method-chip { margin: 4px 4px 4px 0; cursor: default; }
+  .top-row { display: flex; gap: 14px; align-items: flex-start; padding: 14px 6px; border-bottom: 1px dashed rgba(200,120,255,0.08); border-radius: 8px; transition: background 0.3s ease; }
+  .top-row:last-child { border-bottom: none; }
+  .top-row:hover { background: rgba(255,79,227,0.04); }
+  .top-rank { flex: none; width: 34px; height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; color: #ff9df2; background: rgba(255,79,227,0.08); border: 1px solid rgba(255,79,227,0.25); }
+  .top-title { font-size: 13.5px; line-height: 1.55; color: #f0e2fa; font-weight: 600; }
+  .top-meta { font-size: 11.5px; color: var(--ink-faint); margin-top: 3px; }
+  .top-key { font-size: 12.5px; color: var(--ink-dim); margin-top: 5px; }
+  .top-grade { margin-left: auto; flex: none; padding-top: 2px; }
+  @media (max-width: 960px) {
+    .hero-grid { grid-template-columns: 1fr; }
+    .hero-canvas-wrap { height: 420px; order: -1; }
+    .hero-stats { grid-template-columns: repeat(2, 1fr); gap: 24px; }
+    .fc-forest { left: 0; bottom: 8px; }
+    .fc-wave { right: 0; top: 8px; }
+  }
+</style>
+</head>
+<body>
+<canvas id="bg-canvas"></canvas>
+<header class="nav">
+  <a class="nav-brand" href="index.html">
+    <svg class="nav-logo" viewBox="0 0 32 32" aria-hidden="true"><defs><linearGradient id="nlg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff9df2"/><stop offset="1" stop-color="#b026c9"/></linearGradient></defs><polygon points="16,2.5 27.5,9 27.5,23 16,29.5 4.5,23 4.5,9" fill="rgba(255,79,227,0.06)" stroke="url(#nlg)" stroke-width="1.5"/><polygon points="16,7 23.5,11.2 23.5,20.8 16,25 8.5,20.8 8.5,11.2" fill="none" stroke="#b026c9" stroke-width="0.7" opacity="0.55"/><path d="M8,11 L14,21 M14,11 L8,21 M15,11 L23,11 L15,21 L23,21" fill="none" stroke="#ffb54d" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="24.5" cy="23" r="1.3" fill="#ff9df2"/></svg>
+    <span class="nav-title">SPORTSCI RESEARCH <em>INSTITUTE</em></span>
+  </a>
+  <nav class="nav-links">
+    <a href="index.html" class="active">首页</a>
+    <a href="database.html">证据数据库</a>
+    <a href="simulation.html">生理仿真</a>
+    <a href="assessment.html">智能评估</a>
+    <a href="tools.html">科研工具</a>
+    <a href="supplements.html">补剂中心</a>
+    <a href="anatomy.html">人体图谱</a>
+    <a href="medicine.html">运动医学</a>
+    <a href="plan.html">训练计划</a>
+    <a href="about.html">关于</a>
+  </nav>
+</header>
+
+<div class="page">
+<main>
+  <!-- ============ HERO ============ -->
+  <section class="hero">
+    <div class="container hero-grid">
+      <div>
+        <div class="kicker">SPORTSCI RESEARCH INSTITUTE · 运动人体科学全域科研系统</div>
+        <h1 class="h-hero">运动科学<br><span class="accent">全域智能科研</span>平台</h1>
+        <p class="lead mt-16">覆盖运动生理学、运动生物力学、运动康复与损伤、运动营养与代谢、健康与运动医学、科研方法学六大赛道的「文献证据可视化 + 智能科研辅助系统」。十大板块贯通证据检索、生理仿真、风险评估、补剂循证、人体图谱、临床处方与训练计划——不做泛科普，只做学科数据库、科研工具与模型推演。</p>
+        <div class="hero-cta">
+          <a class="btn btn-primary" href="database.html">进入证据数据库</a>
+          <a class="btn" href="simulation.html">启动生理仿真</a>
+        </div>
+        <div class="founder-tag"><span class="ft-dot"></span>DESIGNED &amp; BUILT BY <b>XURAN ZHOU</b></div>
+        <div class="hero-stats">
+          <div class="stat"><div class="stat-num" id="st-entries">—</div><div class="stat-label">索引证据条目</div></div>
+          <div class="stat"><div class="stat-num" id="st-libs">—</div><div class="stat-label">结构化证据分库</div></div>
+          <div class="stat"><div class="stat-num">6</div><div class="stat-label">生理仿真模型</div></div>
+          <div class="stat"><div class="stat-num">14</div><div class="stat-label">评估与科研工具</div></div>
+        </div>
+      </div>
+      <div class="hero-canvas-wrap">
+        <div class="hero-mark" aria-hidden="true">XZ</div>
+        <div class="hero-halo"></div>
+        <canvas id="hero-canvas"></canvas>
+        <div class="float-card glass float-slow fc-forest">
+          <div class="fc-title">Forest Plot · 证据合成</div>
+          <svg viewBox="0 0 200 110" width="100%" aria-hidden="true">
+            <line x1="100" y1="8" x2="100" y2="92" stroke="rgba(200,120,255,0.35)" stroke-dasharray="3 3"/>
+            <g stroke="#ff4fe3" stroke-width="1">
+              <line x1="66" y1="16" x2="120" y2="16"/><rect x="88" y="12" width="9" height="9" fill="#ff4fe3" opacity="0.85"/>
+              <line x1="80" y1="30" x2="132" y2="30"/><rect x="102" y="26" width="7" height="7" fill="#ff4fe3" opacity="0.7"/>
+              <line x1="58" y1="44" x2="112" y2="44"/><rect x="80" y="40" width="11" height="11" fill="#3de8ff" opacity="0.85"/>
+              <line x1="90" y1="58" x2="146" y2="58"/><rect x="114" y="54" width="6" height="6" fill="#ff4fe3" opacity="0.6"/>
+              <line x1="72" y1="72" x2="128" y2="72"/><rect x="95" y="68" width="8" height="8" fill="#3de8ff" opacity="0.75"/>
+            </g>
+            <polygon points="96,84 112,84 104,92 96,92" fill="none" stroke="#ffb54d" stroke-width="1.2"/>
+            <line x1="30" y1="100" x2="170" y2="100" stroke="rgba(200,120,255,0.3)"/>
+          </svg>
+          <div class="tiny">I² = 41% · RE 模型 · 教学示意</div>
+        </div>
+        <div class="float-card glass float-slower fc-wave">
+          <div class="fc-title">HR Kinetics · 心肺负荷</div>
+          <svg viewBox="0 0 180 70" width="100%" aria-hidden="true">
+            <path d="M4 60 C 22 58, 26 30, 44 26 S 70 22, 88 20 S 130 16, 176 12" fill="none" stroke="#3de8ff" stroke-width="1.6"/>
+            <path d="M4 60 C 22 58, 26 34, 44 30 S 70 27, 88 25 S 130 21, 176 17" fill="none" stroke="#ff4fe3" stroke-width="1.2" opacity="0.55"/>
+            <line x1="4" y1="60" x2="176" y2="60" stroke="rgba(200,120,255,0.3)"/>
+            <line x1="4" y1="14" x2="176" y2="14" stroke="rgba(255,181,77,0.4)" stroke-dasharray="4 4"/>
+          </svg>
+          <div class="tiny">τ_on = 30 s · 一阶动力学</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 国际指南基准 ============ -->
+  <section class="section" style="padding-top:0">
+    <div class="container">
+      <div class="kicker reveal">INTERNATIONAL BENCHMARKS</div>
+      <h2 class="h2 reveal">国际指南与权威基准数据</h2>
+      <p class="lead reveal" data-delay="1">平台内容以公开发布的指南、立场声明与共识文件为标尺。下表摘录关键推荐值，用于校准站内模型与评估阈值；原始表述以文件全文为准。</p>
+      <div class="table-wrap mt-32 reveal" data-delay="2">
+        <table class="table">
+          <thead><tr><th>发布机构 / 文件</th><th>年份</th><th>关键基准值</th><th>平台对应模块</th></tr></thead>
+          <tbody>
+            <tr><td><span class="t-title">WHO · 身体活动与久坐行为指南</span></td><td>2020</td><td>成人每周 150–300 min 中等强度，或 75–150 min 高强度有氧；每周 ≥2 天肌力训练</td><td>智能评估 · 训练计划</td></tr>
+            <tr><td><span class="t-title">WHO · 全球身体活动监测（Lancet Global Health）</span></td><td>2024</td><td>2022 年全球约 31% 成人（约 18 亿）未达到推荐活动量</td><td>首页基准 · 证据数据库</td></tr>
+            <tr><td><span class="t-title">ACSM · 运动测试与处方指南（第 11 版）</span></td><td>2021</td><td>FITT-VP 框架；有氧 30–60 min/d、每周 3–5 天；抗阻每周 2–3 次</td><td>运动医学 · 智能评估</td></tr>
+            <tr><td><span class="t-title">ISSN · 肌酸补充立场声明</span></td><td>2017</td><td>维持量 3–5 g/d；快速装载 0.3 g/kg/d × 5–7 天</td><td>补剂中心 · 生理仿真</td></tr>
+            <tr><td><span class="t-title">ISSN · 蛋白质与运动立场声明</span></td><td>2017</td><td>1.4–2.0 g/kg/d，每餐约 0.25 g/kg 优质蛋白</td><td>补剂中心 · 科研工具</td></tr>
+            <tr><td><span class="t-title">IOC · REDs 共识声明</span></td><td>2023</td><td>能量可用性 EA &lt;30 kcal/kg FFM/d 判定为低能量可用性</td><td>智能评估 · 补剂中心</td></tr>
+            <tr><td><span class="t-title">ACSM · 抗阻训练进阶立场声明</span></td><td>2009</td><td>每周 2–3 次、多关节动作优先，负荷与容量渐进递增</td><td>训练计划 · 科研工具</td></tr>
+            <tr><td><span class="t-title">WADA · 世界反兴奋剂条例禁用清单</span></td><td>2026</td><td>11 类禁用物质与方法（S0–S9 与 P1）</td><td>补剂中心</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="notice mt-16 reveal"><b>统计口径</b> · 首页「索引证据条目」为平台自建索引的条目计数，并非 PubMed 全库检索结果；「权威基准」为指南关键推荐值的摘录，不替代原文。指南数值随版本更新可能调整，正式引用请核对最新版本与原始文件。</div>
+    </div>
+  </section>
+
+  <!-- ============ 六大科研赛道 ============ -->
+  <section class="section">
+    <div class="container">
+      <div class="kicker reveal">RESEARCH TRACKS</div>
+      <h2 class="h2 reveal">六大科研赛道 · 全域覆盖</h2>
+      <p class="lead reveal" data-delay="1">每一条赛道对应一个结构化证据分库与专属分析模型，子方向持续扩充。</p>
+      <div class="grid-3 mt-32">
+        <div class="card tone-a reveal">
+          <svg class="track-icon" viewBox="0 0 34 34" aria-hidden="true"><path d="M4 17h6l3-8 4 16 3-8h10" fill="none" stroke="#ff4fe3" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <div class="panel-title">运动生理学</div>
+          <div class="panel-sub">Exercise Physiology</div>
+          <ul class="sub-list">
+            <li>心肺耐力与摄氧动力学</li>
+            <li>高强度间歇训练</li>
+            <li>疲劳、恢复与过度训练</li>
+            <li>呼吸肌功能与通气</li>
+            <li>骨骼肌肥大与力量适应</li>
+            <li>神经肌肉适应</li>
+            <li>分子信号与整合生理</li>
+            <li>训练负荷监控与建模</li>
+          </ul>
+        </div>
+        <div class="card tone-b reveal" data-delay="1">
+          <svg class="track-icon" viewBox="0 0 34 34" aria-hidden="true"><circle cx="17" cy="7" r="3.4" fill="none" stroke="#ff4fe3" stroke-width="1.5"/><path d="M17 11v9M17 14l-7 4M17 14l7 4M17 20l-6 9M17 20l6 9" fill="none" stroke="#3de8ff" stroke-width="1.5" stroke-linecap="round"/></svg>
+          <div class="panel-title">运动生物力学</div>
+          <div class="panel-sub">Sports Biomechanics</div>
+          <ul class="sub-list">
+            <li>体态评估与姿势控制</li>
+            <li>胸廓形态与呼吸力学</li>
+            <li>膈肌姿势功能</li>
+            <li>脊柱稳定性系统</li>
+            <li>肩胛动力学与动力链</li>
+            <li>动作模式筛查（FMS）</li>
+            <li>步态与跑姿分析</li>
+            <li>肌肉失衡（Janda 体系）</li>
+          </ul>
+        </div>
+        <div class="card tone-d reveal" data-delay="2">
+          <svg class="track-icon" viewBox="0 0 34 34" aria-hidden="true"><path d="M17 5l10 4v8c0 6-4.5 10-10 12C11.5 27 7 23 7 17V9z" fill="none" stroke="#ff4fe3" stroke-width="1.5" stroke-linejoin="round"/><path d="M12.5 16.5l3 3 6-6" fill="none" stroke="#3de8ff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <div class="panel-title">运动康复与损伤</div>
+          <div class="panel-sub">Rehabilitation &amp; Injury</div>
+          <ul class="sub-list">
+            <li>损伤流行病学与病因模型</li>
+            <li>负荷-损伤关系（ACWR）</li>
+            <li>肌肉拉伤风险与预防</li>
+            <li>肌腱病连续体模型</li>
+            <li>胸廓与肋骨应力性损伤</li>
+            <li>ACL 重返运动标准</li>
+            <li>神经肌肉预防训练</li>
+            <li>康复-体能一体化</li>
+          </ul>
+        </div>
+        <div class="card tone-c reveal" data-delay="3">
+          <svg class="track-icon" viewBox="0 0 34 34" aria-hidden="true"><path d="M13 5h8v6l4 9a5 5 0 01-4.6 7H13.6A5 5 0 019 20l4-9z" fill="none" stroke="#ff4fe3" stroke-width="1.5" stroke-linejoin="round"/><path d="M12.5 20h9" stroke="#3de8ff" stroke-width="1.4"/><circle cx="15.5" cy="23" r="1" fill="#3de8ff"/><circle cx="19" cy="21.5" r="0.8" fill="#ff4fe3"/></svg>
+          <div class="panel-title">运动营养与代谢</div>
+          <div class="panel-sub">Nutrition &amp; Metabolism</div>
+          <ul class="sub-list">
+            <li>蛋白质代谢与分配策略</li>
+            <li>碳水化合物供能体系</li>
+            <li>肌酸、咖啡因、β-丙氨酸</li>
+            <li>硝酸盐与血管功能</li>
+            <li>水合与电解质管理</li>
+            <li>体成分与减重期营养</li>
+            <li>补剂证据分级（IOC 框架）</li>
+            <li>营养周期化</li>
+          </ul>
+        </div>
+        <div class="card tone-a reveal" data-delay="1">
+          <svg class="track-icon" viewBox="0 0 34 34" aria-hidden="true"><rect x="8" y="5" width="18" height="24" rx="4" fill="none" stroke="#ff4fe3" stroke-width="1.5"/><path d="M8 12h18" stroke="#ff4fe3" stroke-width="1.2" opacity="0.6"/><path d="M13 22c2-3 4 2 8-2" fill="none" stroke="#3de8ff" stroke-width="1.5" stroke-linecap="round"/></svg>
+          <div class="panel-title">运动补剂科学</div>
+          <div class="panel-sub">Ergogenic Aids &amp; Supplements</div>
+          <ul class="sub-list">
+            <li>肌酸：磷酸原系统与安全共识</li>
+            <li>咖啡因：剂量-时机-剂型</li>
+            <li>β-丙氨酸与肌肽缓冲</li>
+            <li>硝酸盐-NO 通路与氧耗</li>
+            <li>碳酸氢钠急性碱化</li>
+            <li>胶原、HMB、Omega-3、铁</li>
+            <li>污染风险与第三方检测</li>
+            <li>剂量-血药浓度仿真联动</li>
+          </ul>
+        </div>
+        <div class="card tone-b reveal" data-delay="2">
+          <svg class="track-icon" viewBox="0 0 34 34" aria-hidden="true"><path d="M17 28S5 20.5 5 12.5A6.5 6.5 0 0117 8a6.5 6.5 0 0112 4.5C29 20.5 17 28 17 28z" fill="none" stroke="#ff4fe3" stroke-width="1.5" stroke-linejoin="round"/><polyline points="10,17 14,17 16,13 18.5,20 21,17 24,17" fill="none" stroke="#3de8ff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <div class="panel-title">健康促进与运动医学</div>
+          <div class="panel-sub">Health &amp; Sports Medicine</div>
+          <ul class="sub-list">
+            <li>WHO/ACSM 运动处方指南</li>
+            <li>心肺适能与全因死亡队列</li>
+            <li>久坐行为与代谢健康</li>
+            <li>能量可用性与 RED-S</li>
+            <li>睡眠与恢复生理学</li>
+            <li>赛前心脏筛查（PPS）</li>
+            <li>体成分评估方法学</li>
+            <li>糖尿病/血压/骨健康运动干预</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 八大功能模块 ============ -->
+  <section class="section" style="padding-top:0">
+    <div class="container">
+      <div class="kicker reveal">FUNCTIONAL MODULES</div>
+      <h2 class="h2 reveal">八大功能模块</h2>
+      <p class="lead reveal" data-delay="1">从证据检索到临床处方、从细胞机制到逐周训练负荷，八个模块共用一套证据链与同一套本地计算内核。</p>
+      <div class="grid-4 mt-32">
+        <a class="mod-link" href="database.html">
+          <div class="card mod-card tone-a reveal">
+            <div class="mod-num">MODULE 01</div>
+            <div class="panel-title">全域运动科学证据数据库</div>
+            <p class="panel-sub mt-8">心肺生理 · 骨骼肌适应 · 体态与胸廓生物力学 · 损伤康复 · 代谢营养 · 运动补剂 · 健康与运动医学七大分库，加方法学工具库，共八大分库。可筛选、可检索、可评级、可可视化、可导出文献矩阵——迷你版体育科学循证知网。</p>
+            <span class="mod-go">进入模块 <svg width="14" height="14" viewBox="0 0 14 14"><path d="M2 7h9M8 3.5L11.5 7 8 10.5" fill="none" stroke="currentColor" stroke-width="1.4"/></svg></span>
+          </div>
+        </a>
+        <a class="mod-link" href="simulation.html">
+          <div class="card mod-card tone-b reveal" data-delay="1">
+            <div class="mod-num">MODULE 02</div>
+            <div class="panel-title">人体运动生理可视化仿真系统</div>
+            <p class="panel-sub mt-8">心肺负荷一阶动力学模拟、胸廓形态力学 3D 仿真、骨骼肌肥大剂量-反应模拟、Banister 疲劳-适应双系统模型。参数可拖、曲线实时生成、3D 胸廓随呼吸动态形变。</p>
+            <span class="mod-go">进入模块 <svg width="14" height="14" viewBox="0 0 14 14"><path d="M2 7h9M8 3.5L11.5 7 8 10.5" fill="none" stroke="currentColor" stroke-width="1.4"/></svg></span>
+          </div>
+        </a>
+        <a class="mod-link" href="assessment.html">
+          <div class="card mod-card tone-c reveal" data-delay="2">
+            <div class="mod-num">MODULE 03</div>
+            <div class="panel-title">运动损伤智能评估系统</div>
+            <p class="panel-sub mt-8">腘绳肌拉伤风险筛查、运动相关胸痛红旗分诊与胸廓-呼吸风险评估、训练负荷骤增 ACWR 监控、ACL 重返运动决策清单。输出风险等级与逐条标注文献的循证建议。</p>
+            <span class="mod-go">进入模块 <svg width="14" height="14" viewBox="0 0 14 14"><path d="M2 7h9M8 3.5L11.5 7 8 10.5" fill="none" stroke="currentColor" stroke-width="1.4"/></svg></span>
+          </div>
+        </a>
+        <a class="mod-link" href="tools.html">
+          <div class="card mod-card tone-d reveal" data-delay="3">
+            <div class="mod-num">MODULE 04</div>
+            <div class="panel-title">学术科研辅助工具站</div>
+            <p class="panel-sub mt-8">效应量计算器、Mini Meta 分析引擎（DL 随机效应、森林图、漏斗图、Egger 检验）、GRADE 证据分级助手、PEDro 质量评分。浏览器内完成循证方法学全流程演练。</p>
+            <span class="mod-go">进入模块 <svg width="14" height="14" viewBox="0 0 14 14"><path d="M2 7h9M8 3.5L11.5 7 8 10.5" fill="none" stroke="currentColor" stroke-width="1.4"/></svg></span>
+          </div>
+        </a>
+        <a class="mod-link" href="supplements.html">
+          <div class="card mod-card tone-a reveal">
+            <div class="mod-num">MODULE 05</div>
+            <div class="panel-title">运动补剂循证中心</div>
+            <p class="panel-sub mt-8">80 种常用运动补剂的剂量、时机与 A/B/C 证据分级，含按体重与训练类型计算的个体化剂量、WADA 禁用清单说明与第三方检测提示。</p>
+            <span class="mod-go">进入模块 <svg width="14" height="14" viewBox="0 0 14 14"><path d="M2 7h9M8 3.5L11.5 7 8 10.5" fill="none" stroke="currentColor" stroke-width="1.4"/></svg></span>
+          </div>
+        </a>
+        <a class="mod-link" href="anatomy.html">
+          <div class="card mod-card tone-b reveal" data-delay="1">
+            <div class="mod-num">MODULE 06</div>
+            <div class="panel-title">人体运动系统图谱</div>
+            <p class="panel-sub mt-8">十大部位 · 30 组肌肉的起点、止点、功能、训练动作与常见损伤，配关节活动度参考值、206 块骨构成与三类杠杆的力学分析。</p>
+            <span class="mod-go">进入模块 <svg width="14" height="14" viewBox="0 0 14 14"><path d="M2 7h9M8 3.5L11.5 7 8 10.5" fill="none" stroke="currentColor" stroke-width="1.4"/></svg></span>
+          </div>
+        </a>
+        <a class="mod-link" href="medicine.html">
+          <div class="card mod-card tone-c reveal" data-delay="2">
+            <div class="mod-num">MODULE 07</div>
+            <div class="panel-title">运动医学与临床运动处方</div>
+            <p class="panel-sub mt-8">七类慢病的 FITT-VP 运动处方、八条运动红旗与急症处置、软组织损伤分级与重返运动门槛、八类药物对运动能力的影响。</p>
+            <span class="mod-go">进入模块 <svg width="14" height="14" viewBox="0 0 14 14"><path d="M2 7h9M8 3.5L11.5 7 8 10.5" fill="none" stroke="currentColor" stroke-width="1.4"/></svg></span>
+          </div>
+        </a>
+        <a class="mod-link" href="plan.html">
+          <div class="card mod-card tone-d reveal" data-delay="3">
+            <div class="mod-num">MODULE 08</div>
+            <div class="panel-title">训练计划与周期化中心</div>
+            <p class="panel-sub mt-8">按目标、周数与训练日生成的逐周负荷表与强度曲线，含六类成熟模板、八项训练变量与五大动作的相对力量标准。</p>
+            <span class="mod-go">进入模块 <svg width="14" height="14" viewBox="0 0 14 14"><path d="M2 7h9M8 3.5L11.5 7 8 10.5" fill="none" stroke="currentColor" stroke-width="1.4"/></svg></span>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 热门证据 TOP10 ============ -->
+  <section class="section" style="padding-top:0">
+    <div class="container">
+      <div class="kicker reveal">TRENDING EVIDENCE</div>
+      <h2 class="h2 reveal">热门证据 TOP 10</h2>
+      <p class="lead reveal" data-delay="1">按平台影响力指数排序的必读文献，实时取自证据数据库。点击进入完整数据库检索。</p>
+      <div class="card glass mt-32 reveal" data-delay="2" style="padding:10px 22px">
+        <div id="top-list"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 补剂证据速查 ============ -->
+  <section class="section" style="padding-top:0">
+    <div class="container">
+      <div class="kicker reveal">SUPPLEMENT MATRIX</div>
+      <h2 class="h2 reveal">运动补剂证据速查矩阵</h2>
+      <p class="lead reveal" data-delay="1">以 IOC 2018 共识与 ISSN 立场声明为框架的增效补剂分级速查。A 级 = 证据充分的增效补剂；B 级 = 有前景但证据有限；C 级 = 证据不足或情境特异。</p>
+      <div class="table-wrap mt-32 reveal" data-delay="2">
+        <table class="table">
+          <thead><tr><th>补剂</th><th>典型剂量</th><th>适用场景</th><th>证据等级</th><th>关键备注</th></tr></thead>
+          <tbody>
+            <tr><td><span class="t-title">一水肌酸</span></td><td>3–5 g/d（或 20 g/d 冲击 5–7 天）</td><td>力量/爆发/冲刺、增肌期</td><td><span class="badge badge-a">A</span></td><td>研究最充分的增效补剂；长期安全性证据良好（Kreider 2017）</td></tr>
+            <tr><td><span class="t-title">咖啡因</span></td><td>3–6 mg/kg，运动前 30–60 min</td><td>耐力、力量功率、认知警觉</td><td><span class="badge badge-a">A</span></td><td>剂量 &gt;9 mg/kg 不增效且副作用增加；存在个体 habituation（Guest 2021）</td></tr>
+            <tr><td><span class="t-title">β-丙氨酸</span></td><td>3.2–6.4 g/d，持续 ≥4 周</td><td>1–4 min 高强度运动、格斗/间歇</td><td><span class="badge badge-a">A</span></td><td>通过提升肌肽缓冲起效；感觉异常无害可分次减轻（Trexler 2015）</td></tr>
+            <tr><td><span class="t-title">硝酸盐（甜菜根汁）</span></td><td>约 6–8 mmol NO₃⁻，运动前 2–3 h</td><td>耐力经济性、团体项目</td><td><span class="badge badge-a">A</span></td><td>训练水平越低收益越大；抗菌漱口水会削弱效应（Jones 2014）</td></tr>
+            <tr><td><span class="t-title">碳酸氢钠</span></td><td>0.2–0.4 g/kg，运动前 60–150 min</td><td>高强度 1–7 min 项目</td><td><span class="badge badge-a">A</span></td><td>胃肠不适常见；建议分次或与碳水同服（Carr 2011）</td></tr>
+            <tr><td><span class="t-title">蛋白质补充</span></td><td>总量 ≈1.6 g/kg/d，每餐 0.3 g/kg</td><td>抗阻适应、减重保肌</td><td><span class="badge badge-a">A</span></td><td>1.6 g/kg/d 附近达收益平台；睡前蛋白增强夜间合成（Morton 2018）</td></tr>
+            <tr><td><span class="t-title">明胶/胶原 + 维 C</span></td><td>15 g 明胶 + 50 mg 维 C，训练前 1 h</td><td>肌腱/韧带结缔组织</td><td><span class="badge badge-b">B</span></td><td>提升胶原合成标志物（Shaw 2017），临床结局证据仍在积累</td></tr>
+            <tr><td><span class="t-title">Omega-3 鱼油</span></td><td>EPA+DHA 约 2 g/d</td><td>恢复、神经肌肉适应（老龄）</td><td><span class="badge badge-b">B</span></td><td>老年女性力量适应增效 RCT（Da Boit 2017）；青年人群证据不一</td></tr>
+            <tr><td><span class="t-title">HMB</span></td><td>3 g/d</td><td>停训期、能量缺口期抗分解</td><td><span class="badge badge-b">B</span></td><td>情境特异性强；规律训练者增效证据弱（Wilson 2013）</td></tr>
+            <tr><td><span class="t-title">铁补充</span></td><td>依铁蛋白水平个体化</td><td>女性运动员、耐力项目</td><td><span class="badge badge-b">B</span></td><td>先筛查（铁蛋白/转铁蛋白饱和度）再补充，避免盲目补铁（Sim 2019）</td></tr>
+            <tr><td><span class="t-title">酸樱桃汁</span></td><td>浓缩汁 30 ml × 2/d</td><td>DOMS 缓解、密集赛程恢复</td><td><span class="badge badge-c">C</span></td><td>效应方向积极但幅度有限（Bell 2014）</td></tr>
+            <tr><td><span class="t-title">谷氨酰胺 / BCAA / 促睾类</span></td><td>—</td><td>—</td><td><span class="badge badge-c">C</span></td><td>IOC 2018：缺乏可靠增效证据；警惕市场宣传与污染风险</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="warn reveal" data-delay="3"><b>污染警示</b> · IOC 共识强调：补剂可能含未标注的禁用物质，竞技运动员应选用 Informed Sport 等第三方检测产品。本表为循证教学速查，不构成使用建议。</div>
+    </div>
+  </section>
+
+  <!-- ============ 健康参考值速查 ============ -->
+  <section class="section" style="padding-top:0">
+    <div class="container">
+      <div class="kicker reveal">HEALTH REFERENCE</div>
+      <h2 class="h2 reveal">人体健康参考值速查</h2>
+      <p class="lead reveal" data-delay="1">基于 WHO / ACSM / AHA 等权威框架的教学参考区间。个体差异显著，临床判读请以医疗专业人员为准。</p>
+      <div class="grid-2 mt-32">
+        <div class="table-wrap reveal" data-delay="1">
+          <table class="table">
+            <thead><tr><th>指标</th><th>参考区间（成人）</th><th>来源框架</th></tr></thead>
+            <tbody>
+              <tr><td><span class="t-title">静息心率</span></td><td>60–100 次/分；耐力运动员可低至 40–60</td><td>ACSM GETP</td></tr>
+              <tr><td><span class="t-title">血压分级</span></td><td>正常 &lt;120/80；高血压 ≥140/90 mmHg</td><td>AHA/ACC</td></tr>
+              <tr><td><span class="t-title">BMI</span></td><td>18.5–23.9（中国成人标准）；运动员慎用</td><td>WHO/中国标准</td></tr>
+              <tr><td><span class="t-title">体脂率</span></td><td>男性约 10–20%、女性约 18–28%（随年龄上调）</td><td>Gallagher 2000</td></tr>
+              <tr><td><span class="t-title">最大心率</span></td><td>208 − 0.7×年龄（优于 220 − 年龄）</td><td>Tanaka 2001</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="table-wrap reveal" data-delay="2">
+          <table class="table">
+            <thead><tr><th>指标</th><th>参考区间（成人）</th><th>来源框架</th></tr></thead>
+            <tbody>
+              <tr><td><span class="t-title">周活动量</span></td><td>150–300 min 中强度有氧 + ≥2 次肌力</td><td>WHO 2020</td></tr>
+              <tr><td><span class="t-title">睡眠时长</span></td><td>7–9 h；运动员建议 8–10 h 或日间小睡</td><td>Vitale 2019</td></tr>
+              <tr><td><span class="t-title">脱水警戒</span></td><td>体重丢失 ≥2% 显著损害耐力与认知</td><td>Goulet 2013</td></tr>
+              <tr><td><span class="t-title">能量可用性 EA</span></td><td>≥45 理想；30–45 次优；&lt;30 kcal/kg FFM/d 警戒</td><td>IOC RED-S 2018</td></tr>
+              <tr><td><span class="t-title">蛋白质摄入</span></td><td>普通成人 0.8 g/kg/d；训练人群 1.2–2.0 g/kg/d</td><td>ISSN 2017</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 周期化计划模板 ============ -->
+  <section class="section" style="padding-top:0">
+    <div class="container">
+      <div class="kicker reveal">PERIODIZATION TEMPLATES</div>
+      <h2 class="h2 reveal">周期化训练计划模板库</h2>
+      <p class="lead reveal" data-delay="1">四种经典周期化结构的教学化模板，与「生理仿真 · 疲劳累积模型」联动验证负荷节奏。</p>
+      <div class="grid-4 mt-32">
+        <div class="card tone-a reveal">
+          <div class="mod-num">TEMPLATE 01</div>
+          <div class="panel-title">线性周期</div>
+          <div class="panel-sub">Linear Periodization</div>
+          <ul class="sub-list">
+            <li>W1–4：高容量 70–75%1RM，3×10–12</li>
+            <li>W5–8：强度递增 80–85%，4×6–8</li>
+            <li>W9–12：高强度 87–92%，5×3–5</li>
+            <li>每 4 周一个中周期，容量递减强度递增</li>
+            <li>适用：新手力量、单峰赛事准备</li>
+          </ul>
+          <p class="tiny mt-16">锚点：Bompa &amp; Buzzichelli 周期化体系；ACSM 2009 进阶立场声明</p>
+        </div>
+        <div class="card tone-b reveal" data-delay="1">
+          <div class="mod-num">TEMPLATE 02</div>
+          <div class="panel-title">波动周期</div>
+          <div class="panel-sub">Undulating / DUP</div>
+          <ul class="sub-list">
+            <li>周内交替：力量日 4×4 @ 85%</li>
+            <li>肥大日 3×10 @ 72%，功率日 5×3 @ 78%</li>
+            <li>周与周负荷上下波动 ±10–15%</li>
+            <li>神经-肥大刺激高频轮换，平台期友好</li>
+            <li>适用：进阶训练者、多目标并行</li>
+          </ul>
+          <p class="tiny mt-16">锚点：DUP 研究序列；Kraemer &amp; Ratamess 2004</p>
+        </div>
+        <div class="card tone-c reveal" data-delay="2">
+          <div class="mod-num">TEMPLATE 03</div>
+          <div class="panel-title">板块周期</div>
+          <div class="panel-sub">Block Periodization</div>
+          <ul class="sub-list">
+            <li>蓄积板块 2–4 周：高容量一般体能</li>
+            <li>转化板块 2–3 周：专项强度集中</li>
+            <li>实现板块 1–2 周：减量峰值竞技</li>
+            <li>残余效应串联，集中负荷定向适应</li>
+            <li>适用：高阶耐力、多峰赛季</li>
+          </ul>
+          <p class="tiny mt-16">锚点：Issurin 板块周期；Mujika &amp; Padilla 2000 减量科学</p>
+        </div>
+        <div class="card tone-d reveal" data-delay="3">
+          <div class="mod-num">TEMPLATE 04</div>
+          <div class="panel-title">减量与峰值</div>
+          <div class="panel-sub">Tapering &amp; Peaking</div>
+          <ul class="sub-list">
+            <li>赛前 7–14 天容量降 40–60%</li>
+            <li>保持强度、削减组数与频次</li>
+            <li>ATL 消退快于 CTL → TSB 转正</li>
+            <li>预期表现提升约 2–3%（Meta 级证据）</li>
+            <li>适用：赛前峰值、平台期重置</li>
+          </ul>
+          <p class="tiny mt-16">锚点：Mujika 减量研究序列；仿真模块可交互验证</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 人体系统矩阵 ============ -->
+  <section class="section" style="padding-top:0">
+    <div class="container">
+      <div class="kicker reveal">HUMAN SYSTEMS ATLAS</div>
+      <h2 class="h2 reveal">人体系统 × 学科应用矩阵</h2>
+      <p class="lead reveal" data-delay="1">以人体系统为主轴索引全站工具与证据：每个系统对应关键评估指标、平台关联模块与核心文献方向。</p>
+      <div class="grid-3 mt-32">
+        <div class="card tone-b reveal">
+          <div class="panel-title">心肺系统</div>
+          <div class="panel-sub">Cardiopulmonary</div>
+          <ul class="sub-list">
+            <li>核心指标：VO2max、乳酸阈、HR 动力学</li>
+            <li>仿真：心肺负荷动态模拟（一阶动力学）</li>
+            <li>评估：运动胸痛红旗分诊</li>
+            <li>证据：心肺生理证据库 · 28+ 条目</li>
+          </ul>
+        </div>
+        <div class="card tone-a reveal" data-delay="1">
+          <div class="panel-title">神经肌肉系统</div>
+          <div class="panel-sub">Neuromuscular</div>
+          <ul class="sub-list">
+            <li>核心指标：1RM、RFD、肌力对称性 LSI</li>
+            <li>仿真：骨骼肌肥大剂量-反应</li>
+            <li>评估：1RM 估算与力量评级</li>
+            <li>证据：骨骼肌适应证据库 · 20+ 条目</li>
+          </ul>
+        </div>
+        <div class="card tone-d reveal" data-delay="2">
+          <div class="panel-title">能量代谢系统</div>
+          <div class="panel-sub">Energy Metabolism</div>
+          <ul class="sub-list">
+            <li>核心指标：能量可用性 EA、TDEE、底物氧化</li>
+            <li>仿真：能量平衡与体成分模型</li>
+            <li>工具：宏量营养素计算器</li>
+            <li>证据：代谢营养库 + RED-S 共识</li>
+          </ul>
+        </div>
+        <div class="card tone-c reveal">
+          <div class="panel-title">骨与结缔组织</div>
+          <div class="panel-sub">Bone &amp; Connective Tissue</div>
+          <ul class="sub-list">
+            <li>核心指标：负荷暴露、胶原合成、骨密度</li>
+            <li>评估：ACWR 负荷-损伤监控</li>
+            <li>补剂：明胶+维 C 时机策略（B 级）</li>
+            <li>证据：肌腱连续体、肋骨应力性损伤</li>
+          </ul>
+        </div>
+        <div class="card tone-a reveal" data-delay="1">
+          <div class="panel-title">内分泌与恢复</div>
+          <div class="panel-sub">Endocrine &amp; Recovery</div>
+          <ul class="sub-list">
+            <li>核心指标：睡眠时长/质量、HRV、主观疲劳</li>
+            <li>仿真：Banister 疲劳-适应双系统</li>
+            <li>评估：能量可用性与恢复筛查</li>
+            <li>证据：睡眠综述、RED-S、负荷监控</li>
+          </ul>
+        </div>
+        <div class="card tone-b reveal" data-delay="2">
+          <div class="panel-title">呼吸与姿势系统</div>
+          <div class="panel-sub">Breathing &amp; Posture</div>
+          <ul class="sub-list">
+            <li>核心指标：胸廓指数、膈肌位移、呼吸模式</li>
+            <li>仿真：胸廓形态力学 3D 仿真</li>
+            <li>工具：PEDro / GRADE 方法学评估</li>
+            <li>证据：体态与胸廓生物力学库 · 24+ 条目</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 方法学 ============ -->
+  <section class="section" style="padding-top:0">
+    <div class="container">
+      <div class="grid-2">
+        <div class="card tone-c reveal">
+          <div class="panel-title">循证方法学框架</div>
+          <p class="panel-sub mt-8">平台证据标定与工具实现遵循国际通用规范：</p>
+          <div class="mt-16">
+            <span class="chip method-chip">PRISMA 2020 报告规范</span>
+            <span class="chip method-chip">GRADE 证据分级</span>
+            <span class="chip method-chip">DerSimonian-Laird 随机效应</span>
+            <span class="chip method-chip">Higgins I² 异质性</span>
+            <span class="chip method-chip">Egger 发表偏倚检验</span>
+            <span class="chip method-chip">PEDro 质量评价</span>
+            <span class="chip method-chip">RoB 2 偏倚风险</span>
+            <span class="chip method-chip">Banister 冲量-反应模型</span>
+          </div>
+        </div>
+        <div class="card tone-d reveal" data-delay="1">
+          <div class="panel-title">建设与分工声明</div>
+          <p class="panel-sub mt-8">本平台由 Xuran Zhou 独立设计并构建：研究方向选定、文献筛选、证据分级与全部正文内容均由作者独立完成；代码实现与界面排版借助通用开发工具辅助完成。平台为学术非营利项目，迭代过程以版本仓库提交记录留存。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="footer-grid">
+    <div class="footer-col footer-brand">
+      <div class="footer-title">SPORTSCI RESEARCH INSTITUTE</div>
+      <p>运动科学全域智能科研平台 · 文献证据可视化与科研辅助系统</p>
+      <p class="footer-meta">本科生独立搭建 · 学术非营利项目</p>
+    </div>
+    <div class="footer-col">
+      <div class="footer-h">免责声明</div>
+      <p>本平台全部内容仅用于学术研究与教育目的，不构成医疗建议、诊断或治疗方案。运动处方与康复训练须在执业医师或持证康复专业人员指导下进行。运动中若出现胸痛、胸闷、心悸、晕厥等症状，请立即停止运动并及时就医。</p>
+    </div>
+    <div class="footer-col">
+      <div class="footer-h">数据与引用</div>
+      <p>数据库文献信息版权归原作者及出版机构所有，条目摘编为学习性转述，结论以原始出版物为准。平台示例分析数据仅用于功能演示，不构成对任何真实个体的评估。</p>
+    </div>
+    <div class="footer-col">
+      <div class="footer-h">版权声明</div>
+      <p>© 2026 Xuran Zhou. 本站原创内容采用 <a href="https://creativecommons.org/licenses/by-nc/4.0/deed.zh" target="_blank" rel="noopener">CC BY-NC 4.0</a> 协议共享，仅限非商业使用并须署名。图表与模型均为平台自绘。Three.js 与 Apache ECharts 遵循其各自开源许可。</p>
+    </div>
+  </div>
+  <div class="footer-bottom">SPORTSCI RESEARCH INSTITUTE · DESIGNED &amp; BUILT BY XURAN ZHOU · 2026</div>
+</footer>
+</div>
+
+<script src="vendor/three.min.js"></script>
+<script src="assets/js/bg.js"></script>
+<script src="assets/js/hero.js"></script>
+<script src="assets/js/data.js"></script>
+<script src="assets/js/cursor.js"></script>
+<script>
+  SPORTSCI_BG.init("bg-canvas");
+  SPORTSCI_CURSOR.init();
+  SPORTSCI_HERO.init("hero-canvas");
+  (function () {
+    if (!window.SPORTSCI_DATA || !SPORTSCI_DATA.entries) return;
+    var el = document.getElementById("st-entries");
+    var lb = document.getElementById("st-libs");
+    if (el) el.textContent = SPORTSCI_DATA.entries.length + "+";
+    if (lb) lb.textContent = (SPORTSCI_DATA.libraries || []).length;
+  })();
+  (function () {
+    var box = document.getElementById("top-list");
+    if (!box || !window.SPORTSCI_DATA) return;
+    function esc(s) { return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;"); }
+    var T = SPORTSCI_DATA.types, LIB = {};
+    SPORTSCI_DATA.libraries.forEach(function (l) { LIB[l.id] = l.name; });
+    var list = SPORTSCI_DATA.entries.slice().sort(function (a, b) { return b.pop - a.pop; }).slice(0, 10);
+    box.innerHTML = list.map(function (e, i) {
+      return '<a class="mod-link" href="database.html"><div class="top-row">' +
+        '<div class="top-rank num">' + (i + 1) + '</div>' +
+        '<div style="flex:1;min-width:0">' +
+          '<div class="top-title">' + esc(e.title) + '</div>' +
+          '<div class="top-meta">' + esc(e.authors) + ' · ' + esc(e.journal) + ' ' + e.year + ' · ' + esc(LIB[e.lib] || "") + ' · ' + esc(T[e.type] || "") + '</div>' +
+          '<div class="top-key">' + esc(e.key) + '</div>' +
+        '</div>' +
+        '<div class="top-grade"><span class="badge badge-' + e.grade.toLowerCase() + '">' + e.grade + '</span></div>' +
+      '</div></a>';
+    }).join("");
+  })();
+</script>
+</body>
+</html>

@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>训练计划与周期化中心 · SPORTSCI RESEARCH INSTITUTE</title>
+<meta name="description" content="训练计划中心：按目标、周期长度、每周天数与训练水平生成逐周周期化计划，含训练变量配置、六类经典模板与相对力量标准参考。">
+<link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="%238fe8cd"/><stop offset="1" stop-color="%233f8a70"/></linearGradient></defs><polygon points="16,2.5 27.5,9 27.5,23 16,29.5 4.5,23 4.5,9" fill="rgba(255,79,227,0.07)" stroke="url(%23g)" stroke-width="1.6"/><polygon points="16,7 23.5,11.2 23.5,20.8 16,25 8.5,20.8 8.5,11.2" fill="none" stroke="url(%23g)" stroke-width="0.8" opacity="0.5"/><path d="M8,11 L14,21 M14,11 L8,21 M15,11 L23,11 L15,21 L23,21" fill="none" stroke="%23c9ae85" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><circle cx="25" cy="16" r="1.6" fill="%238fe8cd"/></svg>'>
+<link rel="stylesheet" href="assets/css/main.css">
+<style>
+  .pl-pane { display: none; }
+  .pl-pane.active { display: block; }
+  .pl-split { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; margin-top: 14px; }
+  .pl-split .card { padding: 14px; }
+  .pl-split .pd { font-size: 10px; letter-spacing: 0.16em; color: var(--accent-dim); }
+  .pl-split .pf { font-size: 13px; color: #f2dffb; margin-top: 6px; font-weight: 600; }
+  .pl-split .pp { font-size: 11.5px; color: var(--ink-dim); margin-top: 4px; }
+  .pl-summary { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+  .pl-summary .card { padding: 16px 18px; }
+  .pl-summary .sk { font-size: 10.5px; letter-spacing: 0.16em; color: var(--ink-faint); }
+  .pl-summary .sv { font-size: 20px; font-weight: 700; color: var(--accent); margin-top: 4px; font-variant-numeric: tabular-nums; }
+  .pl-tpl { display: flex; flex-direction: column; }
+  @media (max-width: 900px) {
+    .pl-split { grid-template-columns: repeat(3, 1fr); }
+    .pl-summary { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 560px) { .pl-split { grid-template-columns: 1fr 1fr; } }
+</style>
+</head>
+<body>
+<canvas id="bg-canvas"></canvas>
+<header class="nav">
+  <a class="nav-brand" href="index.html">
+    <svg class="nav-logo" viewBox="0 0 32 32" aria-hidden="true"><defs><linearGradient id="nlg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff9df2"/><stop offset="1" stop-color="#b026c9"/></linearGradient></defs><polygon points="16,2.5 27.5,9 27.5,23 16,29.5 4.5,23 4.5,9" fill="rgba(255,79,227,0.06)" stroke="url(#nlg)" stroke-width="1.5"/><polygon points="16,7 23.5,11.2 23.5,20.8 16,25 8.5,20.8 8.5,11.2" fill="none" stroke="#b026c9" stroke-width="0.7" opacity="0.55"/><path d="M8,11 L14,21 M14,11 L8,21 M15,11 L23,11 L15,21 L23,21" fill="none" stroke="#ffb54d" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="24.5" cy="23" r="1.3" fill="#ff9df2"/></svg>
+    <span class="nav-title">SPORTSCI RESEARCH <em>INSTITUTE</em></span>
+  </a>
+  <nav class="nav-links">
+    <a href="index.html">首页</a>
+    <a href="database.html">证据数据库</a>
+    <a href="simulation.html">生理仿真</a>
+    <a href="assessment.html">智能评估</a>
+    <a href="tools.html">科研工具</a>
+    <a href="supplements.html">补剂中心</a>
+    <a href="anatomy.html">人体图谱</a>
+    <a href="medicine.html">运动医学</a>
+    <a href="plan.html" class="active">训练计划</a>
+    <a href="about.html">关于</a>
+  </nav>
+</header>
+
+<div class="page">
+<main>
+  <section class="section"><div class="container">
+    <div class="kicker">MODULE 08 · PROGRAMMING CENTER</div>
+    <h1 class="h1">训练计划与周期化中心</h1>
+    <p class="lead mt-16">把训练变量变成可执行的周计划：按目标、周期长度、每周训练天数与训练水平生成逐周强度—容量安排，附六类经典分化模板、八项训练变量配置原则与相对力量标准参考。生成结果为教学模板，实际执行需按个体恢复能力调整。</p>
+
+    <div class="tabbar mt-32" id="pl-tabs">
+      <button class="tab active" data-pane="gen">周期化生成器</button>
+      <button class="tab" data-pane="tpl">模板库</button>
+      <button class="tab" data-pane="var">训练变量</button>
+      <button class="tab" data-pane="std">力量标准</button>
+    </div>
+
+    <!-- 生成器 -->
+    <div class="pl-pane active" id="pl-gen">
+      <div class="grid-2">
+        <div class="card tone-a">
+          <div class="panel-title">计划参数</div>
+          <div class="panel-sub mb-16">强度以 %1RM 表示，容量以每周有效组数表示</div>
+          <label class="label">训练目标</label>
+          <select class="select mb-16" id="pl-goal">
+            <option value="hypertrophy" selected>肌肥大</option>
+            <option value="strength">最大力量</option>
+            <option value="endurance">肌耐力 / 耐力基础</option>
+            <option value="fatloss">减脂与体成分</option>
+            <option value="performance">运动表现（力量-功率）</option>
+          </select>
+          <label class="label">周期长度（周） · <span class="num" id="pl-weeks-view">8</span> 周</label>
+          <div class="slider-row mb-16"><input type="range" class="slider" id="pl-weeks" min="4" max="16" step="1" value="8"><output class="slider-val num" id="pl-weeks-val">8 周</output></div>
+          <label class="label">每周训练天数</label>
+          <div class="slider-row mb-16"><input type="range" class="slider" id="pl-days" min="2" max="6" step="1" value="4"><output class="slider-val num" id="pl-days-val">4 天</output></div>
+          <label class="label">训练水平</label>
+          <select class="select mb-16" id="pl-level">
+            <option value="novice">新手（&lt;1 年系统训练）</option>
+            <option value="intermediate" selected>中级（1–3 年）</option>
+            <option value="advanced">进阶（&gt;3 年）</option>
+          </select>
+          <div class="notice" style="margin-bottom:0"><b>生成逻辑</b> · 以 4 周为一个中周期递增负荷，第 4/8/12/16 周安排减载（容量降约 40%、强度降 5–10%）；新手容量系数 0.75，进阶 1.15。</div>
+        </div>
+        <div>
+          <div class="pl-summary" id="pl-summary"></div>
+          <div class="card glass mt-16" style="padding:16px 18px">
+            <div class="flex-between">
+              <div class="panel-title" style="font-size:14px">周分化安排</div>
+              <span class="tiny" id="pl-split-note"></span>
+            </div>
+            <div class="pl-split" id="pl-split"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card tone-b mt-24">
+        <div class="panel-title">逐周计划表</div>
+        <div class="panel-sub mt-8">减载周以浅色标注；强度与容量的组合按目标自动生成。</div>
+        <div class="table-wrap mt-16">
+          <table class="table">
+            <thead><tr><th>周次</th><th>阶段</th><th>强度 %1RM</th><th>组 × 次</th><th>每周组数</th><th>有氧/辅助</th><th>备注</th></tr></thead>
+            <tbody id="pl-body"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card tone-c mt-24" style="padding:18px 20px">
+        <div class="flex-between mb-8">
+          <div class="panel-title" style="font-size:14px">负荷曲线预览</div>
+          <span class="tiny">柱 = 每周有效组数 · 线 = 强度 %1RM</span>
+        </div>
+        <div class="chart-box" id="pl-chart"></div>
+      </div>
+    </div>
+
+    <!-- 模板 -->
+    <div class="pl-pane" id="pl-tpl">
+      <div class="grid-3">
+        <div class="card pl-tpl tone-a">
+          <div class="mod-num">TEMPLATE 01</div>
+          <div class="panel-title">上下肢分化 · 每周 4 天</div>
+          <div class="panel-sub mt-8">Upper / Lower Split</div>
+          <ul class="sub-list">
+            <li>周一 上肢推主导：卧推、肩推、三头</li>
+            <li>周二 下肢：深蹲、罗马尼亚硬拉、提踵</li>
+            <li>周四 上肢拉主导：引体、划船、二头</li>
+            <li>周五 下肢：硬拉、箭步、核心</li>
+            <li>适用：中级训练者的容量与恢复平衡</li>
+          </ul>
+        </div>
+        <div class="card pl-tpl tone-b">
+          <div class="mod-num">TEMPLATE 02</div>
+          <div class="panel-title">推拉腿 · 每周 6 天</div>
+          <div class="panel-sub mt-8">Push / Pull / Legs</div>
+          <ul class="sub-list">
+            <li>推：卧推、肩推、侧平举、三头</li>
+            <li>拉：引体、划船、面拉、二头</li>
+            <li>腿：深蹲、硬拉 / RDL、腿举、提踵</li>
+            <li>每周两轮，强度与容量交替高低</li>
+            <li>适用：高容量需求、时间充裕者</li>
+          </ul>
+        </div>
+        <div class="card pl-tpl tone-c">
+          <div class="mod-num">TEMPLATE 03</div>
+          <div class="panel-title">全身训练 · 每周 3 天</div>
+          <div class="panel-sub mt-8">Full Body · 3×/week</div>
+          <ul class="sub-list">
+            <li>每次 1 蹲 / 1 髋铰链 / 1 推 / 1 拉 / 1 核心</li>
+            <li>隔天训练，保留完整恢复日</li>
+            <li>适合新手建立动作模式与频率</li>
+            <li>进阶可采用重/中/轻日波动</li>
+            <li>适用：时间有限、重返训练</li>
+          </ul>
+        </div>
+        <div class="card pl-tpl tone-d">
+          <div class="mod-num">TEMPLATE 04</div>
+          <div class="panel-title">5×5 线性力量</div>
+          <div class="panel-sub mt-8">Linear Strength 5×5</div>
+          <ul class="sub-list">
+            <li>A 日：深蹲 5×5、卧推 5×5、划船 5×5</li>
+            <li>B 日：深蹲 5×5、肩推 5×5、硬拉 1×5</li>
+            <li>每次成功则加重 2.5–5 kg</li>
+            <li>连续 3 次失败则减载 10% 重建</li>
+            <li>适用：新手力量快速提升期</li>
+          </ul>
+        </div>
+        <div class="card pl-tpl tone-b">
+          <div class="mod-num">TEMPLATE 05</div>
+          <div class="panel-title">耐力 80/20 极化</div>
+          <div class="panel-sub mt-8">Polarized Endurance</div>
+          <ul class="sub-list">
+            <li>约 80% 训练时间在低强度（Zone 1–2）</li>
+            <li>约 20% 为高强度间歇（Zone 4–5）</li>
+            <li>周总量按项目逐步递增，每 4 周减量</li>
+            <li>低强度以时长累积，高强度以质量为先</li>
+            <li>适用：耐力项目基础期与赛季维持</li>
+          </ul>
+        </div>
+        <div class="card pl-tpl tone-a">
+          <div class="mod-num">TEMPLATE 06</div>
+          <div class="panel-title">减脂并行训练</div>
+          <div class="panel-sub mt-8">Concurrent Fat Loss</div>
+          <ul class="sub-list">
+            <li>抗阻 3 天全身，保留力量刺激</li>
+            <li>有氧 4–5 天低冲击，累计 200–300 min</li>
+            <li>蛋白 1.8–2.2 g/kg 保肌，能量缺口温和</li>
+            <li>每周监测体重与围度，避免过快下降</li>
+            <li>适用：体成分优化、体重管理</li>
+          </ul>
+        </div>
+      </div>
+      <div class="notice mt-24"><b>模板使用</b> · 模板提供结构而非处方。动作选择应匹配器械条件与伤病限制；训练量需按个人恢复能力（睡眠、压力、营养）做 ±20% 调整。</div>
+    </div>
+
+    <!-- 变量 -->
+    <div class="pl-pane" id="pl-var">
+      <div class="table-wrap">
+        <table class="table">
+          <thead><tr><th>变量</th><th>定义</th><th>常用范围</th><th>调控要点</th></tr></thead>
+          <tbody>
+            <tr><td><span class="t-title">频率</span></td><td>同一肌群每周训练次数</td><td>2–3 次/周（可至 4–6 次低容量）</td><td>容量相当时，提高频率利于动作质量与技术学习</td></tr>
+            <tr><td><span class="t-title">强度</span></td><td>%1RM 或 RPE/RIR</td><td>力量 85–95%；肥大 60–80%</td><td>强度决定神经适应，容量决定组织适应</td></tr>
+            <tr><td><span class="t-title">容量</span></td><td>每周有效组数</td><td>每肌群 10–20 组</td><td>容量-反应曲线存在个体上限，超过后收益递减</td></tr>
+            <tr><td><span class="t-title">次数区间</span></td><td>每组重复次数</td><td>力量 1–6；肥大 6–12；耐力 &gt;15</td><td>接近力竭（RIR 0–3）时不同次数区间收益相近</td></tr>
+            <tr><td><span class="t-title">组间间歇</span></td><td>两组之间的休息</td><td>力量 3–5 min；肥大 1–2 min</td><td>间歇过短会降低后续组负荷与总容量</td></tr>
+            <tr><td><span class="t-title">动作顺序</span></td><td>训练中动作排列</td><td>多关节优先，薄弱肌群前置</td><td>先做的动作获得最高质量与最大负荷</td></tr>
+            <tr><td><span class="t-title">节奏</span></td><td>向心/离心时间</td><td>离心 2–4 s，向心爆发</td><td>延长离心增加张力时间，但过度减慢降低总容量</td></tr>
+            <tr><td><span class="t-title">进阶</span></td><td>负荷或容量的推进方式</td><td>每 1–2 周 +2.5–5 kg 或 +1–2 组</td><td>先加次数与组数，再加负荷；每 4 周减载</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="grid-2 mt-24">
+        <div class="card tone-b">
+          <div class="panel-title">容量与恢复的平衡</div>
+          <div class="panel-sub mt-8">训练刺激必须与恢复能力匹配。睡眠不足、能量缺口、压力升高时，同样的计划会变成过度负荷。</div>
+          <ul class="sub-list mt-16">
+            <li>睡眠 &lt;6 h 或连续高压力周：容量下调 20–30%</li>
+            <li>疼痛在训练后 24 h 未消退：降低离心负荷或更换动作</li>
+            <li>静息心率升高 5–10 次/分、HRV 持续下降：安排减载</li>
+            <li>每 3–5 周安排 1 个减载周，容量降 40–50%</li>
+          </ul>
+        </div>
+        <div class="card tone-c">
+          <div class="panel-title">进阶判据</div>
+          <div class="panel-sub mt-8">何时加重、何时减量，应基于客观数据而非「感觉还行」。</div>
+          <ul class="sub-list mt-16">
+            <li>同一负荷下目标次数全部完成且 RIR ≥2：可加重 2.5–5%</li>
+            <li>连续 2 次未达目标次数：先调整恢复，再考虑减载</li>
+            <li>动作质量下降（代偿、速度变慢）优先于数字加重</li>
+            <li>每 4–8 周复测 1RM 或做次极限测试评估进展</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- 力量标准 -->
+    <div class="pl-pane" id="pl-std">
+      <div class="table-wrap">
+        <table class="table">
+          <thead><tr><th>动作</th><th>新手</th><th>初级</th><th>中级</th><th>进阶</th><th>精英</th></tr></thead>
+          <tbody>
+            <tr><td><span class="t-title">深蹲（后蹲）</span></td><td>0.75× 体重</td><td>1.00×</td><td>1.25×</td><td>1.50×</td><td>1.75×</td></tr>
+            <tr><td><span class="t-title">卧推</span></td><td>0.50×</td><td>0.75×</td><td>1.00×</td><td>1.25×</td><td>1.50×</td></tr>
+            <tr><td><span class="t-title">硬拉</span></td><td>1.00×</td><td>1.25×</td><td>1.50×</td><td>1.75×</td><td>2.00×</td></tr>
+            <tr><td><span class="t-title">肩推（站姿）</span></td><td>0.35×</td><td>0.50×</td><td>0.65×</td><td>0.80×</td><td>0.95×</td></tr>
+            <tr><td><span class="t-title">引体（含负重）</span></td><td>0.25×</td><td>0.50×</td><td>0.75×</td><td>1.00×</td><td>1.25×</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="grid-3 mt-24">
+        <div class="card tone-a"><div class="panel-title">如何使用</div><div class="panel-sub mt-8">以 1RM / 体重比值对照，先确定当前水平，再看下一档差距。比值受身高、肢体长度与体重影响，仅作纵向自我比较。</div></div>
+        <div class="card tone-b"><div class="panel-title">测试建议</div><div class="panel-sub mt-8">优先用 3–5RM 次极限测试估算 1RM；测试前 48 h 避免高容量训练，充分热身并安排保护。</div></div>
+        <div class="card tone-d"><div class="panel-title">性别与年龄</div><div class="panel-sub mt-8">男女绝对力量差异主要来自瘦体重与激素环境；年龄增长后应更关注相对力量与爆发功率的维持。</div></div>
+      </div>
+      <div class="notice mt-24"><b>数据说明</b> · 相对力量档位参考公开力量水平分级框架整理，为教学近似值，不构成选拔或医学评估标准。</div>
+    </div>
+
+    <div class="danger-zone mt-32 reveal"><b>免责声明</b> · 训练计划为教学模板，不构成个体化处方。存在心血管疾病、未控制高血压、关节术后或妊娠等情况时，开始训练前须经医师评估。训练中出现胸痛、晕厥、严重呼吸困难应立即停止并就医。</div>
+  </div></section>
+</main>
+
+<footer class="site-footer">
+  <div class="footer-grid">
+    <div class="footer-col footer-brand">
+      <div class="footer-title">SPORTSCI RESEARCH INSTITUTE</div>
+      <p>运动科学全域智能科研平台 · 文献证据可视化与科研辅助系统</p>
+      <p class="footer-meta">本科生独立搭建 · 学术非营利项目</p>
+    </div>
+    <div class="footer-col">
+      <div class="footer-h">免责声明</div>
+      <p>本平台全部内容仅用于学术研究与教育目的，不构成医疗建议、诊断或治疗方案。运动处方与康复训练须在执业医师或持证康复专业人员指导下进行。运动中若出现胸痛、胸闷、心悸、晕厥等症状，请立即停止运动并及时就医。</p>
+    </div>
+    <div class="footer-col">
+      <div class="footer-h">数据与引用</div>
+      <p>数据库文献信息版权归原作者及出版机构所有，条目摘编为学习性转述，结论以原始出版物为准。平台示例分析数据仅用于功能演示，不构成对任何真实个体的评估。</p>
+    </div>
+    <div class="footer-col">
+      <div class="footer-h">版权声明</div>
+      <p>© 2026 Xuran Zhou. 本站原创内容采用 <a href="https://creativecommons.org/licenses/by-nc/4.0/deed.zh" target="_blank" rel="noopener">CC BY-NC 4.0</a> 协议共享，仅限非商业使用并须署名。图表与模型均为平台自绘。Three.js 与 Apache ECharts 遵循其各自开源许可。</p>
+    </div>
+  </div>
+  <div class="footer-bottom">SPORTSCI RESEARCH INSTITUTE · DESIGNED &amp; BUILT BY XURAN ZHOU · 2026</div>
+</footer>
+</div>
+<script src="vendor/three.min.js"></script>
+<script src="vendor/echarts.min.js"></script>
+<script src="assets/js/bg.js"></script>
+<script src="assets/js/charts.js"></script>
+<script src="assets/js/cursor.js"></script>
+<script src="assets/js/plan.js"></script>
+<script>SPORTSCI_BG.init("bg-canvas"); SPORTSCI_CURSOR.init(); SPORTSCI_PLAN.init();</script>
+</body>
+</html>

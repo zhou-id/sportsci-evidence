@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>人体运动系统图谱 · SPORTSCI RESEARCH INSTITUTE</title>
+<meta name="description" content="交互式人体运动系统图谱：十大部位肌群的起止点、功能、训练动作与常见损伤，关节活动度参考区间可视化，骨骼系统计数与骨适应机制，以及运动生物力学杠杆原理。">
+<link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="%238fe8cd"/><stop offset="1" stop-color="%233f8a70"/></linearGradient></defs><polygon points="16,2.5 27.5,9 27.5,23 16,29.5 4.5,23 4.5,9" fill="rgba(255,79,227,0.07)" stroke="url(%23g)" stroke-width="1.6"/><polygon points="16,7 23.5,11.2 23.5,20.8 16,25 8.5,20.8 8.5,11.2" fill="none" stroke="url(%23g)" stroke-width="0.8" opacity="0.5"/><path d="M8,11 L14,21 M14,11 L8,21 M15,11 L23,11 L15,21 L23,21" fill="none" stroke="%23c9ae85" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><circle cx="25" cy="16" r="1.6" fill="%238fe8cd"/></svg>'>
+<link rel="stylesheet" href="assets/css/main.css">
+<style>
+  .an-pane { display: none; }
+  .an-pane.active { display: block; }
+  .an-body-wrap { display: grid; grid-template-columns: 300px 1fr; gap: 24px; align-items: start; }
+  .an-figure { position: relative; padding: 18px; }
+  .an-figure svg { width: 100%; height: auto; display: block; }
+  .an-region { fill: rgba(180, 140, 255, 0.10); stroke: rgba(200, 120, 255, 0.22); stroke-width: 1; cursor: pointer; transition: fill 0.3s ease, stroke 0.3s ease, filter 0.3s ease; }
+  .an-region:hover { fill: rgba(255, 79, 227, 0.16); stroke: rgba(255, 79, 227, 0.45); }
+  .an-region.active { fill: rgba(255, 79, 227, 0.26); stroke: rgba(255, 79, 227, 0.75); filter: drop-shadow(0 0 8px rgba(255,79,227,0.45)); }
+  .an-region.nosvg { display: none; }
+  .an-part-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 14px; }
+  .an-muscle { padding: 16px 18px; }
+  .an-muscle + .an-muscle { margin-top: 12px; }
+  .an-m-name { font-size: 14.5px; font-weight: 600; color: #f5e4ff; }
+  .an-m-en { font-size: 11px; letter-spacing: 0.1em; color: var(--ink-faint); margin-left: 6px; text-transform: uppercase; }
+  .an-kv { display: grid; grid-template-columns: 82px 1fr; gap: 4px 10px; margin-top: 10px; font-size: 12.5px; line-height: 1.65; }
+  .an-kv dt { color: var(--ink-faint); letter-spacing: 0.06em; }
+  .an-kv dd { color: var(--ink-dim); }
+  .an-legend { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 12px; font-size: 11.5px; color: var(--ink-faint); }
+  .an-metric { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  .an-metric .card { padding: 18px 20px; text-align: center; }
+  @media (max-width: 900px) {
+    .an-body-wrap { grid-template-columns: 1fr; }
+    .an-figure { max-width: 320px; margin: 0 auto; }
+    .an-metric { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+<canvas id="bg-canvas"></canvas>
+<header class="nav">
+  <a class="nav-brand" href="index.html">
+    <svg class="nav-logo" viewBox="0 0 32 32" aria-hidden="true"><defs><linearGradient id="nlg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff9df2"/><stop offset="1" stop-color="#b026c9"/></linearGradient></defs><polygon points="16,2.5 27.5,9 27.5,23 16,29.5 4.5,23 4.5,9" fill="rgba(255,79,227,0.06)" stroke="url(#nlg)" stroke-width="1.5"/><polygon points="16,7 23.5,11.2 23.5,20.8 16,25 8.5,20.8 8.5,11.2" fill="none" stroke="#b026c9" stroke-width="0.7" opacity="0.55"/><path d="M8,11 L14,21 M14,11 L8,21 M15,11 L23,11 L15,21 L23,21" fill="none" stroke="#ffb54d" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="24.5" cy="23" r="1.3" fill="#ff9df2"/></svg>
+    <span class="nav-title">SPORTSCI RESEARCH <em>INSTITUTE</em></span>
+  </a>
+  <nav class="nav-links">
+    <a href="index.html">首页</a>
+    <a href="database.html">证据数据库</a>
+    <a href="simulation.html">生理仿真</a>
+    <a href="assessment.html">智能评估</a>
+    <a href="tools.html">科研工具</a>
+    <a href="supplements.html">补剂中心</a>
+    <a href="anatomy.html" class="active">人体图谱</a>
+    <a href="medicine.html">运动医学</a>
+    <a href="plan.html">训练计划</a>
+    <a href="about.html">关于</a>
+  </nav>
+</header>
+
+<div class="page">
+<main>
+  <section class="section"><div class="container">
+    <div class="kicker">MODULE 06 · MUSCULOSKELETAL ATLAS</div>
+    <h1 class="h1">人体运动系统交互图谱</h1>
+    <p class="lead mt-16">以运动科学视角组织的人体运动系统图谱：十大部位肌群的起点、止点、功能、代表训练动作与常见损伤；关节活动度参考区间可视化；骨骼系统计数与骨适应机制；运动生物力学的三类杠杆与力矩关系。点击左侧人体图或部位标签即可切换肌群。</p>
+
+    <div class="an-metric mt-32">
+      <div class="stat card reveal"><div class="stat-num" id="an-muscle-count">—</div><div class="stat-label">收录肌群条目</div></div>
+      <div class="stat card reveal" data-delay="1"><div class="stat-num">206<span class="unit">块</span></div><div class="stat-label">成人骨骼总数</div></div>
+      <div class="stat card reveal" data-delay="2"><div class="stat-num">10<span class="unit">部位</span></div><div class="stat-label">交互解剖分区</div></div>
+    </div>
+
+    <div class="tabbar mt-32" id="an-tabs">
+      <button class="tab active" data-pane="muscle">肌群交互图谱</button>
+      <button class="tab" data-pane="rom">关节活动度</button>
+      <button class="tab" data-pane="bone">骨骼系统</button>
+      <button class="tab" data-pane="mech">生物力学</button>
+    </div>
+
+    <!-- 肌群 -->
+    <div class="an-pane active" id="an-muscle">
+      <div class="an-body-wrap">
+        <div class="card an-figure">
+          <div class="panel-sub mb-8" style="text-align:center">正面观 · 点击高亮分区</div>
+          <svg viewBox="0 0 220 440" aria-label="人体分区示意图">
+            <g id="an-svg">
+              <circle cx="110" cy="34" r="19" fill="rgba(180,140,255,0.10)" stroke="rgba(200,120,255,0.22)"/>
+              <rect x="102" y="52" width="16" height="12" rx="4" fill="rgba(180,140,255,0.10)" stroke="rgba(200,120,255,0.22)"/>
+              <ellipse class="an-region" data-region="shoulder" cx="72" cy="86" rx="17" ry="13"/>
+              <ellipse class="an-region" data-region="shoulder" cx="148" cy="86" rx="17" ry="13"/>
+              <path class="an-region" data-region="chest" d="M84 74 H136 L142 128 H78 Z"/>
+              <path class="an-region" data-region="core" d="M82 132 H138 L134 196 H86 Z"/>
+              <rect class="an-region" data-region="arm" x="52" y="96" width="17" height="52" rx="8"/>
+              <rect class="an-region" data-region="arm" x="151" y="96" width="17" height="52" rx="8"/>
+              <rect class="an-region" data-region="forearm" x="48" y="150" width="15" height="46" rx="7"/>
+              <rect class="an-region" data-region="forearm" x="157" y="150" width="15" height="46" rx="7"/>
+              <path class="an-region" data-region="glute" d="M86 200 H134 L136 240 H84 Z"/>
+              <rect class="an-region" data-region="thighfront" x="86" y="242" width="21" height="66" rx="9"/>
+              <rect class="an-region" data-region="thighfront" x="113" y="242" width="21" height="66" rx="9"/>
+              <rect class="an-region" data-region="calf" x="90" y="310" width="14" height="62" rx="7"/>
+              <rect class="an-region" data-region="calf" x="116" y="310" width="14" height="62" rx="7"/>
+              <path d="M88 374 h18 v22 h-18 z" fill="rgba(180,140,255,0.10)" stroke="rgba(200,120,255,0.22)"/>
+              <path d="M114 374 h18 v22 h-18 z" fill="rgba(180,140,255,0.10)" stroke="rgba(200,120,255,0.22)"/>
+            </g>
+          </svg>
+          <div class="an-legend">
+            <span>● 高亮 = 当前分区</span>
+            <span>※ 正面示意，非解剖精确比例</span>
+          </div>
+          <div class="an-part-chips" id="an-chips"></div>
+        </div>
+        <div>
+          <div class="flex-between">
+            <div>
+              <h2 class="h2" id="an-region-name">肩带与肩关节</h2>
+              <p class="panel-sub" id="an-region-en">Shoulder Girdle</p>
+            </div>
+            <span class="tag" id="an-region-count">3 条</span>
+          </div>
+          <p class="tiny mt-8" id="an-region-note"></p>
+          <div class="mt-16" id="an-muscle-list"></div>
+        </div>
+      </div>
+      <div class="notice mt-24"><b>起止点说明</b> · 为便于教学，起点/止点采用简化描述（起点通常为近端或轴心侧骨性标志，止点为远端或运动端）。同一肌肉可跨越多个关节，其功能随关节位置与收缩类型变化；精确解剖与个体变异请查阅解剖学图谱。</div>
+    </div>
+
+    <!-- ROM -->
+    <div class="an-pane" id="an-rom">
+      <div class="grid-2">
+        <div class="card tone-b">
+          <div class="panel-title">关节活动度参考区间</div>
+          <div class="panel-sub mt-8">成人被动活动度常用教学参考值，右侧为各动作上限的可视化对比。</div>
+          <div class="chart-box mt-8" id="an-rom-chart"></div>
+        </div>
+        <div class="table-wrap">
+          <table class="table">
+            <thead><tr><th>关节</th><th>动作</th><th>参考范围</th><th>受限提示</th></tr></thead>
+            <tbody>
+              <tr><td><span class="t-title">颈椎</span></td><td>屈曲 / 伸展</td><td>0–45° / 0–45°</td><td>伴神经症状需影像学评估</td></tr>
+              <tr><td><span class="t-title">颈椎</span></td><td>侧屈 / 旋转</td><td>0–45° / 0–60°</td><td>旋转受限常见于胸锁乳突肌紧张</td></tr>
+              <tr><td><span class="t-title">肩</span></td><td>前屈 / 后伸</td><td>0–180° / 0–60°</td><td>外旋丢失提示肩袖或关节囊问题</td></tr>
+              <tr><td><span class="t-title">肩</span></td><td>外展 / 内收</td><td>0–180° / 0–45°</td><td>疼痛弧 60–120° 提示肩峰下撞击</td></tr>
+              <tr><td><span class="t-title">肩</span></td><td>外旋 / 内旋</td><td>0–90° / 0–70°</td><td>投掷运动员常伴内旋缺陷</td></tr>
+              <tr><td><span class="t-title">肘</span></td><td>屈曲 / 伸展</td><td>0–150° / 0°</td><td>伸展受限见于肘关节骨性阻挡</td></tr>
+              <tr><td><span class="t-title">腕</span></td><td>背伸 / 掌屈</td><td>0–70° / 0–80°</td><td>腕管症状常伴屈曲位加重</td></tr>
+              <tr><td><span class="t-title">髋</span></td><td>屈曲 / 伸展</td><td>0–120° / 0–30°</td><td>屈曲受限需区分骨性与软组织</td></tr>
+              <tr><td><span class="t-title">髋</span></td><td>外旋 / 内旋</td><td>0–45° / 0–35°</td><td>内旋受限与股骨髋臼撞击相关</td></tr>
+              <tr><td><span class="t-title">膝</span></td><td>屈曲 / 伸展</td><td>0–135° / 0°</td><td>完全伸膝丢失提示关节内病变</td></tr>
+              <tr><td><span class="t-title">踝</span></td><td>背屈 / 跖屈</td><td>0–20° / 0–50°</td><td>背屈 &lt;10° 与跟腱/深蹲受限相关</td></tr>
+              <tr><td><span class="t-title">距下</span></td><td>内翻 / 外翻</td><td>0–35° / 0–15°</td><td>过度内翻增加踝扭伤风险</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="notice mt-24"><b>测量规范</b> · 活动度应在标准化体位、被动缓慢推至终末感时测量，左右对比并以功能需求为判据。不同教材与量角器方案存在数度差异，本表用于教学对照，不用于临床诊断。</div>
+    </div>
+
+    <!-- 骨骼 -->
+    <div class="an-pane" id="an-bone">
+      <div class="grid-2">
+        <div class="table-wrap">
+          <table class="table">
+            <thead><tr><th>分区</th><th>组成</th><th>数量</th></tr></thead>
+            <tbody>
+              <tr><td><span class="t-title">中轴骨</span></td><td>颅骨（脑颅 8 + 面颅 14）</td><td>22</td></tr>
+              <tr><td><span class="t-title">中轴骨</span></td><td>听小骨（锤、砧、镫，双侧）</td><td>6</td></tr>
+              <tr><td><span class="t-title">中轴骨</span></td><td>舌骨</td><td>1</td></tr>
+              <tr><td><span class="t-title">中轴骨</span></td><td>脊柱（颈 7 + 胸 12 + 腰 5 + 骶 1 + 尾 1）</td><td>26</td></tr>
+              <tr><td><span class="t-title">中轴骨</span></td><td>胸廓（肋 12 对 + 胸骨）</td><td>25</td></tr>
+              <tr><td><span class="t-title">附肢骨 · 上肢</span></td><td>肩带（锁骨 2 + 肩胛骨 2）</td><td>4</td></tr>
+              <tr><td><span class="t-title">附肢骨 · 上肢</span></td><td>肱骨 / 桡尺骨 / 手骨</td><td>2 / 4 / 54</td></tr>
+              <tr><td><span class="t-title">附肢骨 · 下肢</span></td><td>髋骨 2 + 股骨 2 + 髌骨 2</td><td>6</td></tr>
+              <tr><td><span class="t-title">附肢骨 · 下肢</span></td><td>胫腓骨 4 + 足骨 52</td><td>56</td></tr>
+              <tr><td><span class="t-title">合计</span></td><td>中轴 80 + 附肢 126</td><td>206</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div>
+          <div class="card tone-c">
+            <div class="panel-title">骨的力学适应（Wolff 定律）</div>
+            <div class="panel-sub mt-8">骨小梁沿主应力轨迹重建：高于日常阈值的机械负荷刺激成骨，长期卸载则骨量流失。</div>
+            <ul class="sub-list mt-16">
+              <li>成骨需要「高幅值 + 高变化率」的应变，重复同一负荷的适应会平台化</li>
+              <li>冲击性、多方向负荷（跳跃、变向、负重）优于单一匀速负荷</li>
+              <li>骨重建通过基本多细胞单位（BMU）完成，周期约 3–6 个月</li>
+              <li>应力性损伤是「负荷增速 &gt; 骨适应速度」的失衡结果</li>
+              <li>女性运动员三联征 / RED-S 会显著削弱骨适应能力</li>
+            </ul>
+          </div>
+          <div class="card tone-d mt-16">
+            <div class="panel-title">运动专项骨负荷提示</div>
+            <ul class="sub-list mt-16">
+              <li>游泳、骑行等低冲击项目骨密度常低于跑跳项目</li>
+              <li>长期卧床或制动每周可丢失可观骨量，恢复需数月</li>
+              <li>青少年期是骨量峰值形成窗口，负重运动收益最大</li>
+              <li>绝经后女性需抗阻 + 冲击负荷联合干预</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 生物力学 -->
+    <div class="an-pane" id="an-mech">
+      <div class="grid-2">
+        <div class="card tone-a">
+          <div class="panel-title">三类杠杆与人体实例</div>
+          <div class="panel-sub mt-8">杠杆三要素：支点、力点、阻力点。人体骨骼肌系统以第三类杠杆为主，牺牲力量换取速度与活动范围。</div>
+          <div class="table-wrap mt-16">
+            <table class="table">
+              <thead><tr><th>类型</th><th>排列</th><th>人体实例</th><th>力学特征</th></tr></thead>
+              <tbody>
+                <tr><td><span class="t-title">第一类</span></td><td>支点居中</td><td>寰枕关节点头、颈伸肌稳定</td><td>平衡杠杆，可改变力与速度方向</td></tr>
+                <tr><td><span class="t-title">第二类</span></td><td>阻力居中</td><td>踮脚（跖趾关节为支点，小腿三头肌为力点）</td><td>省力杠杆，机械效益 &gt; 1</td></tr>
+                <tr><td><span class="t-title">第三类</span></td><td>力点居中</td><td>肱二头肌屈肘、腘绳肌屈膝</td><td>速度杠杆，机械效益 &lt; 1，最常见</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="ok mt-16"><b>力矩关系</b> · 力矩 M = F × d（d 为力臂，即力线到支点的垂直距离）。人体肌肉力臂通常很短，因此关节力矩往往需要数倍于外部负荷的肌力才能平衡。</div>
+        </div>
+        <div>
+          <div class="card tone-b">
+            <div class="panel-title">运动生物力学关键量</div>
+            <div class="table-wrap mt-16">
+              <table class="table">
+                <thead><tr><th>量</th><th>定义</th><th>教学参考</th></tr></thead>
+                <tbody>
+                  <tr><td><span class="t-title">地面反作用力</span></td><td>足触地时地面对人体的力</td><td>跑步约 2–3 倍体重，跳跃落地更高</td></tr>
+                  <tr><td><span class="t-title">跟腱峰值张力</span></td><td>踝跖屈时跟腱承受的拉力</td><td>跑步中可达体重的 4–6 倍（模型测算）</td></tr>
+                  <tr><td><span class="t-title">关节反作用力</span></td><td>关节面间的接触力</td><td>常大于外部负荷，受肌力共收缩影响</td></tr>
+                  <tr><td><span class="t-title">机械功</span></td><td>力 × 位移方向分量</td><td>离心阶段做负功，向心阶段做正功</td></tr>
+                  <tr><td><span class="t-title">弹性储能</span></td><td>肌腱-腱膜串联弹性成分</td><td>拉伸-缩短循环可降低净能耗</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="card tone-d mt-16">
+            <div class="panel-title">训练启示</div>
+            <ul class="sub-list mt-16">
+              <li>髌骨作为籽骨增大股四头肌力臂，膝伸展训练不可忽视其力学角色</li>
+              <li>离心训练提供高张力低代谢成本刺激，是肌腱康复核心手段</li>
+              <li>缩短触地时间、提高步频可降低单次冲击负荷累积</li>
+              <li>力量训练中的关节角度特异性，决定专项动作的迁移程度</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="notice mt-24"><b>数值说明</b> · 本页力学数值为教学量级的近似范围，随速度、体重、技术与测量方法显著变化；不可用于个体风险评估或临床决策。</div>
+    </div>
+
+    <div class="danger-zone mt-32 reveal"><b>免责声明</b> · 本图谱为运动科学教学材料，不构成医学诊断依据。关节活动度异常、持续疼痛、肿胀、弹响伴交锁或神经症状（麻木、无力）应及时就医并由专业人员评估。</div>
+  </div></section>
+</main>
+
+<footer class="site-footer">
+  <div class="footer-grid">
+    <div class="footer-col footer-brand">
+      <div class="footer-title">SPORTSCI RESEARCH INSTITUTE</div>
+      <p>运动科学全域智能科研平台 · 文献证据可视化与科研辅助系统</p>
+      <p class="footer-meta">本科生独立搭建 · 学术非营利项目</p>
+    </div>
+    <div class="footer-col">
+      <div class="footer-h">免责声明</div>
+      <p>本平台全部内容仅用于学术研究与教育目的，不构成医疗建议、诊断或治疗方案。运动处方与康复训练须在执业医师或持证康复专业人员指导下进行。运动中若出现胸痛、胸闷、心悸、晕厥等症状，请立即停止运动并及时就医。</p>
+    </div>
+    <div class="footer-col">
+      <div class="footer-h">数据与引用</div>
+      <p>数据库文献信息版权归原作者及出版机构所有，条目摘编为学习性转述，结论以原始出版物为准。平台示例分析数据仅用于功能演示，不构成对任何真实个体的评估。</p>
+    </div>
+    <div class="footer-col">
+      <div class="footer-h">版权声明</div>
+      <p>© 2026 Xuran Zhou. 本站原创内容采用 <a href="https://creativecommons.org/licenses/by-nc/4.0/deed.zh" target="_blank" rel="noopener">CC BY-NC 4.0</a> 协议共享，仅限非商业使用并须署名。图表与模型均为平台自绘。Three.js 与 Apache ECharts 遵循其各自开源许可。</p>
+    </div>
+  </div>
+  <div class="footer-bottom">SPORTSCI RESEARCH INSTITUTE · DESIGNED &amp; BUILT BY XURAN ZHOU · 2026</div>
+</footer>
+</div>
+<script src="vendor/three.min.js"></script>
+<script src="vendor/echarts.min.js"></script>
+<script src="assets/js/bg.js"></script>
+<script src="assets/js/charts.js"></script>
+<script src="assets/js/cursor.js"></script>
+<script src="assets/js/anatomy.js"></script>
+<script>SPORTSCI_BG.init("bg-canvas"); SPORTSCI_CURSOR.init(); SPORTSCI_ANATOMY.init();</script>
+</body>
+</html>

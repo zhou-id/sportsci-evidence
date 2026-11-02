@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>学术科研辅助工具站 · SPORTSCI RESEARCH INSTITUTE</title>
+<meta name="description" content="效应量计算器、Mini Meta 分析（森林图/漏斗图/Egger 检验）、GRADE 证据分级、PEDro 质量评价、宏量营养素计算、1RM-RPE 负荷换算、周期化计划生成——服务运动科学学生的硬核科研工具。">
+<link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="%238fe8cd"/><stop offset="1" stop-color="%233f8a70"/></linearGradient></defs><polygon points="16,2.5 27.5,9 27.5,23 16,29.5 4.5,23 4.5,9" fill="rgba(255,79,227,0.07)" stroke="url(%23g)" stroke-width="1.6"/><polygon points="16,7 23.5,11.2 23.5,20.8 16,25 8.5,20.8 8.5,11.2" fill="none" stroke="url(%23g)" stroke-width="0.8" opacity="0.5"/><path d="M8,11 L14,21 M14,11 L8,21 M15,11 L23,11 L15,21 L23,21" fill="none" stroke="%23c9ae85" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><circle cx="25" cy="16" r="1.6" fill="%238fe8cd"/></svg>'>
+<link rel="stylesheet" href="assets/css/main.css">
+<style>
+  .tl-pane { display: none; }
+  .tl-pane.active { display: block; }
+  .tl-inputs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .tl-group-h { font-size: 12px; letter-spacing: 0.16em; color: var(--accent-dim); margin: 16px 0 10px; text-transform: uppercase; }
+  .tl-result-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+  .tl-svg-wrap { background: rgba(16,8,30,0.5); border: 1px solid var(--line); border-radius: 10px; padding: 10px; }
+  .tl-svg-wrap svg { width: 100%; height: auto; display: block; }
+  .tl-meta-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; }
+  .tl-check { display: flex; align-items: flex-start; gap: 10px; padding: 8px 0; border-bottom: 1px dashed rgba(200,120,255,0.08); cursor: pointer; font-size: 13.5px; }
+  .tl-check input { margin-top: 4px; accent-color: var(--accent-dim); width: 15px; height: 15px; }
+  .tl-grade-out { font-size: 34px; font-weight: 700; letter-spacing: 0.08em; }
+  @media (max-width: 720px) { .tl-inputs, .tl-result-grid, .tl-meta-stats { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<canvas id="bg-canvas"></canvas>
+<header class="nav">
+  <a class="nav-brand" href="index.html">
+    <svg class="nav-logo" viewBox="0 0 32 32" aria-hidden="true"><defs><linearGradient id="nlg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff9df2"/><stop offset="1" stop-color="#b026c9"/></linearGradient></defs><polygon points="16,2.5 27.5,9 27.5,23 16,29.5 4.5,23 4.5,9" fill="rgba(255,79,227,0.06)" stroke="url(#nlg)" stroke-width="1.5"/><polygon points="16,7 23.5,11.2 23.5,20.8 16,25 8.5,20.8 8.5,11.2" fill="none" stroke="#b026c9" stroke-width="0.7" opacity="0.55"/><path d="M8,11 L14,21 M14,11 L8,21 M15,11 L23,11 L15,21 L23,21" fill="none" stroke="#ffb54d" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="24.5" cy="23" r="1.3" fill="#ff9df2"/></svg>
+    <span class="nav-title">SPORTSCI RESEARCH <em>INSTITUTE</em></span>
+  </a>
+  <nav class="nav-links">
+    <a href="index.html">首页</a>
+    <a href="database.html">证据数据库</a>
+    <a href="simulation.html">生理仿真</a>
+    <a href="assessment.html">智能评估</a>
+    <a href="tools.html" class="active">科研工具</a>
+    <a href="supplements.html">补剂中心</a>
+    <a href="anatomy.html">人体图谱</a>
+    <a href="medicine.html">运动医学</a>
+    <a href="plan.html">训练计划</a>
+    <a href="about.html">关于</a>
+  </nav>
+</header>
+
+<div class="page">
+<main>
+  <section class="section"><div class="container">
+    <div class="kicker">MODULE 04 · RESEARCH TOOLKIT</div>
+    <h1 class="h1">学术科研辅助工具站</h1>
+    <p class="lead mt-16">服务运动科学学生的循证方法学与训练实践工具：效应量、Mini Meta 分析（含森林图与漏斗图）、GRADE 分级、PEDro 质量评价、宏量营养素计算、1RM-RPE 负荷换算与周期化计划生成。全部计算在本地浏览器完成。</p>
+
+    <div class="tabbar mt-32" id="tl-tabs">
+      <button class="tab active" data-pane="es">效应量计算器</button>
+      <button class="tab" data-pane="meta">Mini Meta 分析</button>
+      <button class="tab" data-pane="grade">GRADE 证据分级</button>
+      <button class="tab" data-pane="pedro">PEDro 质量评价</button>
+      <button class="tab" data-pane="macro">宏量营养素计算</button>
+      <button class="tab" data-pane="rpe">1RM-RPE 负荷换算</button>
+      <button class="tab" data-pane="plan">周期化计划生成</button>
+    </div>
+
+    <!-- ===== 1 效应量 ===== -->
+    <div class="tl-pane active" id="tl-es">
+      <div class="grid-2">
+        <div class="card tone-a">
+          <div class="panel-title">两组数据输入</div>
+          <div class="panel-sub mb-16">独立两组 · 均值 ± 标准差</div>
+          <div class="tl-group-h">实验组</div>
+          <div class="tl-inputs">
+            <div><label class="label">均值 M₁</label><input class="input num" id="es-m1" type="number" step="any" value="5.8"></div>
+            <div><label class="label">标准差 SD₁</label><input class="input num" id="es-s1" type="number" step="any" value="2.1"></div>
+            <div><label class="label">样本量 n₁</label><input class="input num" id="es-n1" type="number" step="1" value="18"></div>
+          </div>
+          <div class="tl-group-h">对照组</div>
+          <div class="tl-inputs">
+            <div><label class="label">均值 M₂</label><input class="input num" id="es-m2" type="number" step="any" value="3.9"></div>
+            <div><label class="label">标准差 SD₂</label><input class="input num" id="es-s2" type="number" step="any" value="2.4"></div>
+            <div><label class="label">样本量 n₂</label><input class="input num" id="es-n2" type="number" step="1" value="18"></div>
+          </div>
+        </div>
+        <div class="card tone-b">
+          <div class="panel-title">效应量输出</div>
+          <div class="tl-result-grid mt-16">
+            <div class="stat"><div class="stat-num num" id="es-d">—</div><div class="stat-label">Cohen's d</div></div>
+            <div class="stat"><div class="stat-num num" id="es-g">—</div><div class="stat-label">Hedges' g（校正）</div></div>
+            <div class="stat"><div class="stat-num num" id="es-mag" style="font-size:22px">—</div><div class="stat-label">量级判读</div></div>
+          </div>
+          <p class="muted mt-16" style="font-size:13px" id="es-note">—</p>
+          <div class="notice mt-16"><b>判读基准（Cohen 1988）</b> · |d|≈0.2 小效应、0.5 中效应、0.8 大效应。体育科学场景建议结合最小重要变化（SWC）与置信区间做量级推断（Hopkins 2009；Batterham &amp; Hopkins 2006）。</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== 2 Mini Meta ===== -->
+    <div class="tl-pane" id="tl-meta">
+      <div class="grid-2">
+        <div class="card tone-c">
+          <div class="panel-title">研究数据录入</div>
+          <div class="panel-sub mb-16">每行一条：研究名, 效应量(yi), 标准误(SE) · 已预载示例</div>
+          <textarea class="input" id="meta-input" rows="9" spellcheck="false">Study A (2019), 0.42, 0.16
+Study B (2020), 0.65, 0.21
+Study C (2020), 0.31, 0.12
+Study D (2021), 0.58, 0.19
+Study E (2022), 0.48, 0.10
+Study F (2023), 0.80, 0.27</textarea>
+          <div class="flex mt-16">
+            <button class="btn btn-sm btn-primary" id="meta-run">运行 Meta 分析</button>
+            <button class="btn btn-sm" id="meta-demo">重置示例</button>
+          </div>
+          <div class="tl-meta-stats mt-24">
+            <div class="stat"><div class="stat-num num" id="meta-pool">—</div><div class="stat-label">合并效应 (RE)</div></div>
+            <div class="stat"><div class="stat-num num" id="meta-ci" style="font-size:18px">—</div><div class="stat-label">95% CI</div></div>
+            <div class="stat"><div class="stat-num num" id="meta-i2">—</div><div class="stat-label">I² 异质性</div></div>
+            <div class="stat"><div class="stat-num num" id="meta-egger" style="font-size:18px">—</div><div class="stat-label">Egger p</div></div>
+          </div>
+        </div>
+        <div>
+          <div class="card tone-b"><div class="panel-title">森林图</div><div class="panel-sub">方块 ∝ 权重 · 菱形 = 随机效应合并</div><div class="tl-svg-wrap mt-8" id="meta-forest"></div></div>
+          <div class="card tone-c mt-16"><div class="panel-title">漏斗图</div><div class="panel-sub">横轴效应量 · 纵轴标准误（倒置）</div><div class="tl-svg-wrap mt-8" id="meta-funnel"></div></div>
+        </div>
+      </div>
+      <div class="notice mt-24"><b>方法</b> · DerSimonian-Laird 随机效应模型（1986）；异质性 Q / I²（Higgins 2003）；Egger 线性回归检验发表偏倚（1997）。教学实现，正式发表请使用 R metafor / RevMan 复核。</div>
+    </div>
+
+    <!-- ===== 3 GRADE ===== -->
+    <div class="tl-pane" id="tl-grade">
+      <div class="grid-2">
+        <div class="card tone-d">
+          <div class="panel-title">证据体特征</div>
+          <div class="panel-sub mb-16">对同一临床问题的证据体逐项判定</div>
+          <div class="tl-group-h">起点</div>
+          <div class="db-chips" style="margin-top:0" id="grade-start">
+            <button class="chip active" data-v="high">随机对照试验（起点：高）</button>
+            <button class="chip" data-v="low">观察性研究（起点：低）</button>
+          </div>
+          <div class="tl-group-h">降级因素（每项 −1 级）</div>
+          <label class="tl-check"><input type="checkbox" class="gd"><span>偏倚风险（随机化 / 盲法 / 随访缺陷）</span></label>
+          <label class="tl-check"><input type="checkbox" class="gd"><span>不一致性（I² 高、效应方向不一）</span></label>
+          <label class="tl-check"><input type="checkbox" class="gd"><span>间接性（人群 / 干预 / 结局不直接）</span></label>
+          <label class="tl-check"><input type="checkbox" class="gd"><span>不精确性（CI 宽、样本量不足）</span></label>
+          <label class="tl-check"><input type="checkbox" class="gd"><span>发表偏倚（漏斗图不对称等）</span></label>
+          <div class="tl-group-h">升级因素（观察性研究适用，每项 +1 级）</div>
+          <label class="tl-check"><input type="checkbox" class="gu"><span>效应量大（RR &gt; 2 或 &lt; 0.5）</span></label>
+          <label class="tl-check"><input type="checkbox" class="gu"><span>剂量-反应梯度</span></label>
+          <label class="tl-check"><input type="checkbox" class="gu"><span>合理混杂因素会低估效应</span></label>
+        </div>
+        <div class="card tone-a">
+          <div class="panel-title">GRADE 评级结果</div>
+          <div class="stat mt-16"><div class="tl-grade-out" id="grade-out">—</div><div class="stat-label">证据质量等级</div></div>
+          <p class="muted mt-16" style="font-size:13px" id="grade-note">—</p>
+          <div class="notice mt-16"><b>方法</b> · GRADE 体系（Guyatt 2008 BMJ）：RCT 起点为「高」，观察性研究起点为「低」；五级降级 + 三级升级。等级：高 ⊕⊕⊕⊕ / 中 ⊕⊕⊕ / 低 ⊕⊕ / 极低 ⊕。</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== 4 PEDro ===== -->
+    <div class="tl-pane" id="tl-pedro">
+      <div class="grid-2">
+        <div class="card tone-b">
+          <div class="panel-title">PEDro 11 项核查</div>
+          <div class="panel-sub mb-16">第 1 项（外部效度）不计入总分</div>
+          <div id="pedro-items"></div>
+        </div>
+        <div class="card tone-c">
+          <div class="panel-title">评分结果</div>
+          <div class="stat mt-16"><div class="tl-grade-out num" id="pedro-score">0 / 10</div><div class="stat-label">PEDro 总分</div></div>
+          <div class="mt-16"><span class="grade-badge badge-b" id="pedro-tier">—</span></div>
+          <p class="muted mt-16" style="font-size:13px" id="pedro-note">—</p>
+          <div class="notice mt-16"><b>方法</b> · PEDro 量表（Maher 2003 Phys Ther）：物理治疗 RCT 质量评价标准工具。参考分档：≥7 高、5–6 中、&lt;5 低（教学分档）。</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== 5 宏量营养素 ===== -->
+    <div class="tl-pane" id="tl-macro">
+      <div class="grid-2">
+        <div class="card tone-a">
+          <div class="panel-title">个体参数输入</div>
+          <div class="panel-sub mb-16">Katch-McArdle 静息代谢 × 活动系数 × 目标能量</div>
+          <label class="label">体重（kg）</label>
+          <div class="slider-row"><input type="range" class="slider" id="mc-bw" min="40" max="120" step="1" value="70"><output class="slider-val num" id="mc-bw-val">70</output></div>
+          <label class="label">体脂率（%） · 估算去脂体重 FFM</label>
+          <div class="slider-row"><input type="range" class="slider" id="mc-bf" min="6" max="40" step="0.5" value="18"><output class="slider-val num" id="mc-bf-val">18%</output></div>
+          <label class="label">训练目标</label>
+          <select class="select mb-16" id="mc-goal">
+            <option value="cut">减脂 · 温和缺口 −500 kcal</option>
+            <option value="maintain" selected>维持 · 等热量</option>
+            <option value="gain">增肌 · 温和盈余 +300 kcal</option>
+          </select>
+          <label class="label">日常活动 + 训练量</label>
+          <select class="select mb-16" id="mc-act">
+            <option value="1.4">轻活动 · 每周 1–2 练</option>
+            <option value="1.55" selected>中等 · 每周 3–4 练</option>
+            <option value="1.7">高 · 每周 5–6 练</option>
+            <option value="1.9">运动员 · 每日双练</option>
+          </select>
+          <label class="label">蛋白质目标（g/kg/d） · ISSN 1.4–2.0</label>
+          <div class="slider-row"><input type="range" class="slider" id="mc-pro" min="1.2" max="2.4" step="0.1" value="1.8"><output class="slider-val num" id="mc-pro-val">1.8</output></div>
+        </div>
+        <div class="card tone-b">
+          <div class="panel-title">每日宏量营养素目标</div>
+          <div class="tl-meta-stats mt-16">
+            <div class="stat"><div class="stat-num num" id="mc-kcal">—</div><div class="stat-label">能量 kcal/d</div></div>
+            <div class="stat"><div class="stat-num num" id="mc-pro-g">—</div><div class="stat-label">蛋白质 g/d</div></div>
+            <div class="stat"><div class="stat-num num" id="mc-cho-g">—</div><div class="stat-label">碳水 g/d</div></div>
+            <div class="stat"><div class="stat-num num" id="mc-fat-g">—</div><div class="stat-label">脂肪 g/d</div></div>
+          </div>
+          <p class="muted mt-16" style="font-size:13px" id="mc-note">—</p>
+          <div class="notice mt-16"><b>证据锚点</b> · Katch-McArdle RMR = 370 + 21.6×FFM；蛋白质 1.4–2.0 g/kg/d（ISSN 2017，Jäger 2017）；碳水按训练量周期化 3–10 g/kg/d（Impey 2018）；脂肪 ≥ 总能量 20% 以维持内分泌功能。教学估算，非医疗营养处方。</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== 6 1RM-RPE 负荷换算 ===== -->
+    <div class="tl-pane" id="tl-rpe">
+      <div class="grid-2">
+        <div class="card tone-c">
+          <div class="panel-title">1RM 输入</div>
+          <div class="panel-sub mb-16">基于次数-强度与 RIR（剩余次数）关系换算</div>
+          <label class="label">当前 1RM（kg）</label>
+          <input class="input num mb-16" id="rpe-1rm" type="number" min="20" max="400" step="2.5" value="100">
+          <div class="notice"><b>使用方法</b> · 先选定「目标次数」，再按当日状态选 RPE：RPE 10 = 力竭（0 RIR）、RPE 9 = 余 1 次、RPE 8 = 余 2 次。日常力量课建议多在 RPE 7–9 区间积累有效容量，RPE 10 留给测试周。</div>
+          <div class="notice mt-16"><b>模型说明</b> · 百分比取自次数-最大用力教学换算表（1@10 = 100%，12@10 ≈ 69%）；RPE 每降 1 点近似减少一次最大次数（RTS/RIR 体系教学化近似）。个体差异 ±2–3%，请结合杠速或实测微调。</div>
+        </div>
+        <div class="card tone-d">
+          <div class="panel-title">负荷速查表（kg）</div>
+          <div class="panel-sub">行 = 目标次数 · 列 = 目标 RPE</div>
+          <div class="table-wrap mt-16"><table class="table">
+            <thead><tr><th>目标次数</th><th>%1RM</th><th>RPE 10</th><th>RPE 9</th><th>RPE 8</th></tr></thead>
+            <tbody id="rpe-table"></tbody>
+          </table></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== 7 周期化计划生成 ===== -->
+    <div class="tl-pane" id="tl-plan">
+      <div class="grid-2">
+        <div class="card tone-a">
+          <div class="panel-title">周期参数</div>
+          <div class="panel-sub mb-16">线性 / 波动（DUP） / 板块 三种经典模型</div>
+          <label class="label">周期化模型</label>
+          <select class="select mb-16" id="pl-model">
+            <option value="linear" selected>线性周期 · 强度渐升、容量渐降</option>
+            <option value="dup">波动周期 DUP · 周内强度-容量交替</option>
+            <option value="block">板块周期 · 累积→强化→实现</option>
+          </select>
+          <label class="label">总周数（4–12 周，含减量周）</label>
+          <div class="slider-row"><input type="range" class="slider" id="pl-weeks" min="4" max="12" step="1" value="8"><output class="slider-val num" id="pl-weeks-val">8</output></div>
+          <label class="label">每周力量课次数</label>
+          <select class="select mb-16" id="pl-freq">
+            <option value="2">2 次/周</option>
+            <option value="3" selected>3 次/周</option>
+            <option value="4">4 次/周</option>
+            <option value="5">5 次/周</option>
+          </select>
+          <label class="label">起始强度（%1RM）</label>
+          <div class="slider-row"><input type="range" class="slider" id="pl-start" min="60" max="80" step="2.5" value="70"><output class="slider-val num" id="pl-start-val">70%</output></div>
+          <label class="label">参考 1RM（kg） · 用于负荷列</label>
+          <input class="input num" id="pl-1rm" type="number" min="20" max="400" step="2.5" value="100">
+        </div>
+        <div class="card tone-b">
+          <div class="panel-title">逐周计划表</div>
+          <div class="panel-sub" id="pl-sub">—</div>
+          <div class="table-wrap mt-16"><table class="table">
+            <thead><tr><th>周次</th><th>阶段</th><th>强度</th><th>负荷 kg</th><th>组 × 次</th><th>备注</th></tr></thead>
+            <tbody id="pl-table"></tbody>
+          </table></div>
+          <div class="notice mt-16"><b>证据锚点</b> · 周期化优于非周期化（Rhea &amp; Alderman 2004 效应量优势）；DUP 与线性在肌肥大上差异有限，力量收益略优（Williams 2017）。每 4 周插入减量周（−40–50% 容量）以管理疲劳。</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="notice mt-32 reveal"><b>工具声明</b> · 全部计算在本地浏览器完成，数据不上传。工具为方法学教学实现，正式研究请以 Cochrane Handbook、RevMan / R metafor / GRADEpro 为准；训练与营养参数请结合个体实测调整。</div>
+  </div></section>
+</main>
+<footer class="site-footer">
+  <div class="footer-grid">
+    <div class="footer-col footer-brand">
+      <div class="footer-title">SPORTSCI RESEARCH INSTITUTE</div>
+      <p>运动科学全域智能科研平台 · 文献证据可视化与科研辅助系统</p>
+      <p class="footer-meta">本科生独立搭建 · 学术非营利项目</p>
+    </div>
+    <div class="footer-col">
+      <div class="footer-h">免责声明</div>
+      <p>本平台全部内容仅用于学术研究与教育目的，不构成医疗建议、诊断或治疗方案。运动处方与康复训练须在执业医师或持证康复专业人员指导下进行。运动中若出现胸痛、胸闷、心悸、晕厥等症状，请立即停止运动并及时就医。</p>
+    </div>
+    <div class="footer-col">
+      <div class="footer-h">工具声明</div>
+      <p>科研工具为方法学的教学化实现，结果需经专业统计软件复核后方可用于正式发表。示例数据仅用于功能演示。</p>
+    </div>
+    <div class="footer-col">
+      <div class="footer-h">版权声明</div>
+      <p>© 2026 Xuran Zhou. 本站原创内容采用 <a href="https://creativecommons.org/licenses/by-nc/4.0/deed.zh" target="_blank" rel="noopener">CC BY-NC 4.0</a> 协议共享，仅限非商业使用并须署名。图表与模型均为平台自绘。Three.js 与 Apache ECharts 遵循其各自开源许可。</p>
+    </div>
+  </div>
+  <div class="footer-bottom">SPORTSCI RESEARCH INSTITUTE · DESIGNED &amp; BUILT BY XURAN ZHOU · 2026</div>
+</footer>
+</div>
+<script src="vendor/three.min.js"></script>
+<script src="assets/js/bg.js"></script>
+<script src="assets/js/tools.js"></script>
+<script src="assets/js/cursor.js"></script>
+<script>SPORTSCI_BG.init("bg-canvas"); SPORTSCI_CURSOR.init();</script>
+</body>
+</html>

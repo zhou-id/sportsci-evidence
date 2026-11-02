@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>全域证据数据库 · SPORTSCI RESEARCH INSTITUTE</title>
+<meta name="description" content="覆盖运动生理学、生物力学、康复损伤、营养代谢与科研方法学的结构化文献证据库：可筛选、可检索、可评级、可可视化、可导出文献矩阵。">
+<link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="%238fe8cd"/><stop offset="1" stop-color="%233f8a70"/></linearGradient></defs><polygon points="16,2.5 27.5,9 27.5,23 16,29.5 4.5,23 4.5,9" fill="rgba(255,79,227,0.07)" stroke="url(%23g)" stroke-width="1.6"/><polygon points="16,7 23.5,11.2 23.5,20.8 16,25 8.5,20.8 8.5,11.2" fill="none" stroke="url(%23g)" stroke-width="0.8" opacity="0.5"/><path d="M8,11 L14,21 M14,11 L8,21 M15,11 L23,11 L15,21 L23,21" fill="none" stroke="%23c9ae85" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><circle cx="25" cy="16" r="1.6" fill="%238fe8cd"/></svg>'>
+<link rel="stylesheet" href="assets/css/main.css">
+<style>
+  .db-lib-card { cursor: pointer; }
+  .db-lib-card .lib-count { font-size: 30px; font-weight: 700; color: var(--accent); font-variant-numeric: tabular-nums; }
+  .db-lib-card .lib-en { font-size: 11px; letter-spacing: 0.12em; color: var(--ink-faint); text-transform: uppercase; }
+  .db-filterbar { position: sticky; top: var(--nav-h); z-index: 50; padding: 14px 18px; }
+  .db-filter-grid { display: grid; grid-template-columns: 1fr 170px 150px; gap: 12px; align-items: center; }
+  .db-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+  .db-count { font-size: 12px; letter-spacing: 0.1em; color: var(--ink-faint); }
+  .db-count b { color: var(--accent); font-weight: 600; }
+  .db-entry { padding: 18px 22px; }
+  .db-entry + .db-entry { margin-top: 12px; }
+  .db-entry-head { display: flex; gap: 10px; align-items: flex-start; justify-content: space-between; }
+  .db-entry-title { font-size: 14.5px; line-height: 1.6; color: #f0e2fa; font-weight: 600; }
+  .db-entry-meta { font-size: 12px; color: var(--ink-dim); margin-top: 6px; }
+  .db-entry-meta b { color: var(--ink); font-weight: 600; }
+  .db-entry-key { font-size: 13px; color: var(--ink-dim); margin-top: 10px; padding-left: 12px; border-left: 2px solid rgba(255,79,227,0.25); }
+  .db-entry-tags { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+  .db-badges { display: flex; gap: 6px; flex: none; }
+  .db-badges .tag { white-space: nowrap; }
+  .grade-badge { display: inline-flex; align-items: center; justify-content: center; min-width: 30px; height: 22px; padding: 0 8px; border-radius: 6px; font-size: 11px; font-weight: 700; letter-spacing: 0.06em; }
+  .db-libname { font-size: 11px; color: var(--ink-faint); letter-spacing: 0.08em; }
+  .db-viz-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }
+  .db-empty { padding: 60px 20px; text-align: center; color: var(--ink-faint); }
+  @media (max-width: 900px) {
+    .db-filter-grid { grid-template-columns: 1fr; }
+    .db-viz-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<canvas id="bg-canvas"></canvas>
+<header class="nav">
+  <a class="nav-brand" href="index.html">
+    <svg class="nav-logo" viewBox="0 0 32 32" aria-hidden="true"><defs><linearGradient id="nlg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff9df2"/><stop offset="1" stop-color="#b026c9"/></linearGradient></defs><polygon points="16,2.5 27.5,9 27.5,23 16,29.5 4.5,23 4.5,9" fill="rgba(255,79,227,0.06)" stroke="url(#nlg)" stroke-width="1.5"/><polygon points="16,7 23.5,11.2 23.5,20.8 16,25 8.5,20.8 8.5,11.2" fill="none" stroke="#b026c9" stroke-width="0.7" opacity="0.55"/><path d="M8,11 L14,21 M14,11 L8,21 M15,11 L23,11 L15,21 L23,21" fill="none" stroke="#ffb54d" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="24.5" cy="23" r="1.3" fill="#ff9df2"/></svg>
+    <span class="nav-title">SPORTSCI RESEARCH <em>INSTITUTE</em></span>
+  </a>
+  <nav class="nav-links">
+    <a href="index.html">首页</a>
+    <a href="database.html" class="active">证据数据库</a>
+    <a href="simulation.html">生理仿真</a>
+    <a href="assessment.html">智能评估</a>
+    <a href="tools.html">科研工具</a>
+    <a href="supplements.html">补剂中心</a>
+    <a href="anatomy.html">人体图谱</a>
+    <a href="medicine.html">运动医学</a>
+    <a href="plan.html">训练计划</a>
+    <a href="about.html">关于</a>
+  </nav>
+</header>
+
+<div class="page">
+<main>
+  <section class="section"><div class="container">
+    <div class="kicker">MODULE 01 · RESEARCH DATABASE</div>
+    <h1 class="h1">全域运动科学证据数据库</h1>
+    <p class="lead mt-16">八大结构化证据分库，覆盖运动人体科学六大赛道与科研方法学。全部条目为公开发表的真实文献，每条附证据等级、研究类型与核心结论。可筛选、可检索、可可视化、可导出文献矩阵。</p>
+
+    <div class="grid-3 mt-32" id="db-libs"></div>
+
+    <div class="glass db-filterbar mt-32 reveal">
+      <div class="db-filter-grid">
+        <input class="input" id="db-q" type="search" placeholder="检索标题 / 作者 / 期刊 / 标签 / 关键词…" autocomplete="off">
+        <select class="select" id="db-sort">
+          <option value="pop" selected>按影响力排序</option>
+          <option value="year-desc">按年份（新→旧）</option>
+          <option value="year-asc">按年份（旧→新）</option>
+          <option value="grade">按证据等级</option>
+        </select>
+        <div style="display:flex;gap:10px;align-items:center;justify-content:flex-end">
+          <span class="db-count">命中 <b id="db-hit">0</b> / <span id="db-total">0</span> 条</span>
+          <button class="btn btn-sm" id="db-export">导出矩阵 CSV</button>
+        </div>
+      </div>
+      <div class="db-chips" id="db-lib-chips"></div>
+      <div class="db-chips" id="db-type-chips"></div>
+      <div class="db-chips" id="db-grade-chips"></div>
+    </div>
+
+    <div class="tabbar mt-24" id="db-tabs">
+      <button class="tab active" data-pane="list">文献列表</button>
+      <button class="tab" data-pane="viz">证据可视化</button>
+    </div>
+
+    <div id="db-pane-list">
+      <div id="db-list"></div>
+      <div class="db-empty u-hidden" id="db-empty">
+        <div class="panel-title">无匹配条目</div>
+        <p class="mt-8">尝试放宽筛选条件或更换检索词。</p>
+      </div>
+    </div>
+
+    <div id="db-pane-viz" class="u-hidden">
+      <div class="db-viz-grid">
+        <div class="card tone-a"><div class="panel-title">证据分库分布</div><div class="panel-sub">当前筛选集 · 按分库</div><div class="chart-box mt-8" id="viz-lib"></div></div>
+        <div class="card tone-b"><div class="panel-title">证据等级构成</div><div class="panel-sub">当前筛选集 · GRADE 风格 A–D</div><div class="chart-box mt-8" id="viz-grade"></div></div>
+        <div class="card tone-c"><div class="panel-title">研究类型构成</div><div class="panel-sub">当前筛选集 · 研究设计</div><div class="chart-box mt-8" id="viz-type"></div></div>
+        <div class="card tone-d"><div class="panel-title">发表年份分布</div><div class="panel-sub">当前筛选集 · 直方图</div><div class="chart-box mt-8" id="viz-year"></div></div>
+      </div>
+      <div class="notice mt-24"><b>说明</b> · 可视化实时跟随当前筛选条件。证据等级由平台基于研究设计类型初评（Meta/共识/立场声明→A，RCT/队列→B，综述/教材→C，叙事/病例→D），仅供快速分诊，正式引用请以原文质量评价为准。</div>
+    </div>
+
+    <div class="notice mt-32 reveal">
+      <b>使用声明</b> · 本库条目摘编为学习性转述，版权归原作者及出版机构所有，结论以原始出版物为准。平台持续扩充子方向，欢迎以 Git 提交记录追溯版本演进。
+    </div>
+  </div></section>
+</main>
+<footer class="site-footer">
+  <div class="footer-grid">
+    <div class="footer-col footer-brand">
+      <div class="footer-title">SPORTSCI RESEARCH INSTITUTE</div>
+      <p>运动科学全域智能科研平台 · 文献证据可视化与科研辅助系统</p>
+      <p class="footer-meta">本科生独立搭建 · 学术非营利项目</p>
+    </div>
+    <div class="footer-col">
+      <div class="footer-h">免责声明</div>
+      <p>本平台全部内容仅用于学术研究与教育目的，不构成医疗建议、诊断或治疗方案。运动处方与康复训练须在执业医师或持证康复专业人员指导下进行。运动中若出现胸痛、胸闷、心悸、晕厥等症状，请立即停止运动并及时就医。</p>
+    </div>
+    <div class="footer-col">
+      <div class="footer-h">数据与引用</div>
+      <p>数据库文献信息版权归原作者及出版机构所有，条目摘编为学习性转述，结论以原始出版物为准。平台示例分析数据仅用于功能演示，不构成对任何真实个体的评估。</p>
+    </div>
+    <div class="footer-col">
+      <div class="footer-h">版权声明</div>
+      <p>© 2026 Xuran Zhou. 本站原创内容采用 <a href="https://creativecommons.org/licenses/by-nc/4.0/deed.zh" target="_blank" rel="noopener">CC BY-NC 4.0</a> 协议共享，仅限非商业使用并须署名。图表与模型均为平台自绘。Three.js 与 Apache ECharts 遵循其各自开源许可。</p>
+    </div>
+  </div>
+  <div class="footer-bottom">SPORTSCI RESEARCH INSTITUTE · DESIGNED &amp; BUILT BY XURAN ZHOU · 2026</div>
+</footer>
+</div>
+<script src="vendor/three.min.js"></script>
+<script src="vendor/echarts.min.js"></script>
+<script src="assets/js/bg.js"></script>
+<script src="assets/js/charts.js"></script>
+<script src="assets/js/data.js"></script>
+<script src="assets/js/database.js"></script>
+<script src="assets/js/cursor.js"></script>
+<script>SPORTSCI_BG.init("bg-canvas"); SPORTSCI_CURSOR.init();</script>
+</body>
+</html>
